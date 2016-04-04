@@ -1,0 +1,15 @@
+SOFTENG 701 Assignment 1 Tests:
+
+// Original test
+1. FAIL - non ":" in book title
+2. PASS - " " is the first letter of library name
+3. PASS - the same day of week multiple times
+4. PASS - author with single letter first name
+5. PASS - author with many firstname and initials
+
+
+
+
+
+
+

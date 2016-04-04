@@ -1,0 +1,81 @@
+SOFTENG 701 Assignment 1 Tests:
+
+// Tests 1-32 focus on parser actions, provide meaningful exception messages where possible (unless default is informative enough)
+
+// Original test
+1. PASS - generic test
+
+// LIBRARY entry occurrences
+2. FAIL - <1 LIBRARY
+3. FAIL - >1 LIBRARY
+4. FAIL - <1 WEBSITE
+5. FAIL - >1 WEBSITE
+6. FAIL - <1 BUILDING
+7. FAIL - >1 BUILDING
+8. FAIL - <1 TIMEOFYEAR
+9. PASS - >1 TIMEOFYEAR
+10. FAIL - <1 STAFF
+11. PASS - >1 STAFF
+12. FAIL - <1 BOOKCOLLECTION
+13. PASS - >1 BOOKCOLLECTION
+
+// TIMEOFYEAR entry occurrences
+14. FAIL - <1 START
+15. FAIL - >1 START
+16. FAIL - <1 END
+17. FAIL - >1 END
+18. FAIL - <1 HOURS
+
+// STAFF entry occurrences
+19. FAIL - <1 POSITION
+20. FAIL - >1 POSITION
+21. PASS - <1 EMAIL
+22. PASS - >1 EMAIL
+23. FAIL - <1 TYPE
+24. FAIL - >1 TYPE
+25. FAIL - <1 RATE
+26. FAIL - >1 RATE
+
+// BOOKCOLLECTION entry occurrences
+27. FAIL - <1 BOOK
+28. PASS - >1 BOOK
+29. FAIL - <1 TITLE
+30. FAIL - >1 TITLE
+31. FAIL - <1 AUTHOR
+32. PASS - >1 AUTHOR
+
+// LIBRARY
+33. PASS - WEBSITE can contain a-z A-Z _ - . / chars
+34. FAIL - <3 BUILDING digits
+35. FAIL - >3 BUILDING digits
+36. PASS - names can contain only space char
+37. FAIL - names cannot be empty
+
+// Spaces
+38. PASS - random spaces within LIBRARY tokens that do NOT specify "NO SPACES"
+39. PASS - lexical and synactic analysis only - 'nonsensical' EMAIL, times, month days and years
+
+// Ordering
+40. PASS - random LIBRARY entry ordering
+41. PASS - random STAFF entry ordering
+42. PASS - random BOOKCOLLECTION ordering
+
+// RATE
+43. FAIL - 1 digit cent value for RATE
+44. FAIL - 3 digit cent value for RATE
+
+// EMAIL
+45. FAIL - EMAIL cannot contain consecutive full stops
+46. FAIL - EMAIL cannot contain full stop as first or last character
+
+// Piazza - random ambiguities taken from Piazza
+47. PASS - multiple AUTHOR first names and initials, including a single-character first name of 'P' (i.e. NOT an initial)
+48. FAIL - first/last names must begin with capital letters
+
+// Hooray you made it   ~~~<(^.^)>~~~
+
+
+
+
+
+

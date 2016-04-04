@@ -1,0 +1,11 @@
+LIBRARY "Engineering Library LIBRARY" {    BUILDING 403    WEBSITE "http://www.library.auckland.ac.nz/about-us/libraries/engineering"        TIMEOFYEAR "Summer School" {      START Tuesday, 5 January 2016      END Sunday, 28 February 2016      HOURS Mon,   Tue     ,Thu,Fri( 9:00 AM to 5:00 PM)      HOURS Wed( 9:00    AM to 11:00 PM)
+      HOURS Fri( CLOSED   )    	HOURS Sat,Sun(CLOSED)    }    STAFF "Rod Chan" {
+  		POSITION "Client Services Librarian"
+  		EMAIL rod@auckland.ac.nz
+  		TYPE Full-time
+  		RATE $85000.00    }    
+    TIMEOFYEAR		"Sun" {      START Tuesday, 5 January 2016      END Sunday, 28 February 2016      HOURS Mon, Tue ,Thu,Fri ( 9:00 AM to 5:00 PM)      HOURS Wed(9:00 AM     to8:00 PM)      HOURS Sat,      Sun(   CLOSED)    }    STAFF"Rod Chan x" {      RATE $85000      TYPE Part-time      EMAIL rod.3@auckland-test4.ac.nz      POSITION "Client Services Librarian"      EMAIL rod.2@auckland.ac.nz    }    BOOKCOLLECTION "Fiction" {  		BOOK 8jh30st2 {
+  		    TITLE           "Writing Compilers and Interpreters: A Software Engineering Approach"
+          AUTHOR "Mak, Ronald P."  		}
+    }    
+    BOOKCOLLECTION "Fiction y" {      BOOK 8jh30st3 {          AUTHOR "Mak, Ronald P."          TITLE "Writing Compilers and Interpreters: A Software Engineering Approach"      }      BOOK 8jh30st4 {          TITLE "Writing Compilers and Interpreters: A Software Engineering Approach - test"          AUTHOR "Mak, Ronald P."          AUTHOR "Anika, P."          AUTHOR "Test, W.B."          AUTHOR "Test, A. Pauline"          AUTHOR "Anika, P"      }    }}

@@ -1,0 +1,387 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */
+options
+{
+  static = false;
+}
+
+PARSER_BEGIN(LibParser)
+package lib;
+
+public class LibParser
+{
+  public static void ExactlyOneAssert(int count, String subEntry, String parentEntry)
+  throws ParseException
+  {
+    if(count != 1)
+    {
+      throw new ParseException("There should be only one "
+      + subEntry
+      + " entry in "
+      + parentEntry
+      + "!");
+    }
+  }
+
+  public static void MoreThanOneAssert(int count, String subEntry, String parentEntry)
+  throws ParseException
+  {
+    if(count < 1)
+    {
+      throw new ParseException("There should be more than one "
+      + subEntry
+      + " entry in "
+      + parentEntry
+      + "!");
+    }
+  }
+}
+
+PARSER_END(LibParser)
+
+/* IGNORED WHITE SPACE */
+SKIP :
+{
+  " "
+| "\r"
+| "\t"
+| "\n"
+| "\f"
+}
+
+/* COMMENTS */
+SPECIAL_TOKEN : 
+{
+  <SINGLE_LINE_COMMENT: "//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
+| <FORMAL_COMMENT: "/**" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+| <MULTI_LINE_COMMENT: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+/* RESERVED KEY WORDS */
+TOKEN :
+{
+  < LIBRARY: "LIBRARY" >
+| < WEBSITE: "WEBSITE" >
+| < BUILDING: "BUILDING" >
+| < TIME_OF_YEAR: "TIMEOFYEAR" >
+| < START: "START" >
+| < END: "END" >
+| < HOURS: "HOURS" >
+| < CLOSED: "CLOSED" >
+| < STAFF: "STAFF" >
+| < POSITION: "POSITION" >
+| < EMAIL: "EMAIL" >
+| < TYPE: "TYPE" >
+| < RATE: "RATE" >
+| < BOOK_COLLECTION: "BOOKCOLLECTION" >
+| < BOOK: "BOOK" >
+| < TITLE: "TITLE" >
+| < AUTHOR: "AUTHOR" >
+| < TO: "to" >
+}
+
+/* SEPARATORS */
+TOKEN : 
+{
+  < LPAREN: "(" >
+| < RPAREN: ")" >
+| < LBRACE: "{" >
+| < RBRACE: "}" >
+| < LBRACKET: "[" >
+| < RBRACKET: "]" >
+| < QUOTE: "\"" >
+| < COLON: ":" >
+| < SEMICOLON: ";" >
+| < COMMA: "," >
+| < FULLSTOP: "." >
+| < HYPHEN: "-" >
+| < UNDERSCORE: "_">
+| < AT: "@" >
+| < DOLLAR: "$" >
+| < FORWARDSLASH: "/">
+}
+
+/* IDENTIFIERS */
+TOKEN :
+{
+  < LABEL: < QUOTE >(< LETTER > | " ")+< QUOTE > >
+| < BUILDING_NUMBER: (< DIGIT >){3} >
+| < TYPE_OPTION: "Full-time" | "Part-time" >
+| < RATE_VALUE: < DOLLAR >(< DIGIT >)+((< FULLSTOP >(< DIGIT >){2}))?>
+| < #LETTER: ["a"-"z","A"-"Z"] >
+| < #DIGIT: ["0"-"9"] >
+}
+
+/* WEBSITE ADDRESS */
+TOKEN :
+{
+  < WEBSITE_ADDRESS: < QUOTE>< PROTOCOL >(< ADDRESS >)+< QUOTE > >
+| < #PROTOCOL: "http://" | "https://">
+| < #ADDRESS: (
+    < LETTER >
+  | < UNDERSCORE >
+  | < HYPHEN >
+  | < FULLSTOP >
+  | < FORWARDSLASH >
+  )+ >
+}
+
+/* DATE & TIME */
+TOKEN :
+{ 
+< YEAR: (< DIGIT >){4} >
+| < MONTH: (
+  < LEAP_MONTH>
+  | < NORMAL_MONTH>
+  | < FEBRUARY>
+  ) >
+| < #LEAP_MONTH: (
+  "January"
+  | "March"
+  | "May"
+  | "July"
+  | "August"
+  | "October"
+  | "December"
+  ) >
+| < #NORMAL_MONTH: (
+  "April"
+  | "June"
+  | "September"
+  | "November"
+  ) >
+| < #FEBRUARY: "February" >
+| < DAY: < DIGIT >(< DIGIT >)? >
+| < WEEK: (
+  "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Satuaday"
+  | "Sunday" 
+  ) >
+| < WEEK_SHORT: (
+  "Mon"
+  | "Tue"
+  | "Wed"
+  | "Thu"
+  | "Fri"
+  | "Sat"
+  | "Sun" 
+  ) >
+| < TIME: (< DIGIT >){1,2}< COLON >(< DIGIT >){2} >
+}
+
+/* EMAIL ADDRESS */
+TOKEN :
+{
+  < EMAIL_ADDRESS: < LOCAL_PART >< AT >< DOMAIN_PART > >
+| < #LOCAL_PART: (< LETTER > | < DIGIT >)+(< FULLSTOP >(< LETTER > | < DIGIT >)+)* >
+| < #DOMAIN_PART: (< LETTER > | < DIGIT > | < HYPHEN >)+(< FULLSTOP >(< LETTER > | < DIGIT > | < HYPHEN >)+)* >
+}
+
+/* BOOK */
+TOKEN :
+{
+  < BOOK_ID: (< LETTER > | < DIGIT >){8}>
+| < BOOK_TITLE: < QUOTE > (< LETTER > | < DIGIT > | " " | < HYPHEN > | < COLON >)+< QUOTE > >
+| < SHORT_NAME: ["A"-"Z"]< FULLSTOP >>
+| < LONG_NAME: ["A"-"Z"](["a"-"z"])*>
+}
+
+
+void Library():
+{}
+{
+  //each file must contain information  relating to exactly one LIBRARY entry
+  LibraryItem()< EOF >
+}
+
+void LibraryItem():
+{
+  int websiteCount = 0,
+  buildingCount = 0,
+  timeofyearCount = 0,
+  staffCount = 0,
+  bookcollectionCount = 0;
+}
+{
+  < LIBRARY >< LABEL>< LBRACE >
+  //exactly one WEBSITE and BUILDING entry
+  (
+    WebsiteItem() {websiteCount++;}
+    | BuildingItem() {buildingCount++;}
+    //one or more TIMEOFYEAR, STAFF and BOOKCOLLECTION entry
+    | TimeOfYearItem() {timeofyearCount++;}
+    | StaffItem() {staffCount++;}
+    | BookCollectionItem() {bookcollectionCount++;} 
+  )+
+  {
+    LibParser.ExactlyOneAssert(websiteCount, "WEBSITE", "LIBRARY");
+    LibParser.ExactlyOneAssert(buildingCount, "BUILDING", "LIBRARY");
+    LibParser.MoreThanOneAssert(timeofyearCount, "TIMEOFYEAR", "LIBRARY");
+    LibParser.MoreThanOneAssert(staffCount, "STAFF", "LIBRARY");
+    LibParser.MoreThanOneAssert(bookcollectionCount, "BOOKCOLLECTION", "LIBRARY");
+  }
+  < RBRACE >
+}
+
+void WebsiteItem():
+{}
+{
+  < WEBSITE >< WEBSITE_ADDRESS>
+}
+
+void Date() :
+{}
+{
+   < WEEK>< COMMA >< DAY >< MONTH >< YEAR >
+}
+
+void Hours():
+{}
+{
+  < WEEK_SHORT >(< COMMA >< WEEK_SHORT >)*< LPAREN >Period()< RPAREN >
+}
+
+void Period():
+{}
+{
+  (Time()< TO >Time())|< CLOSED >
+}
+
+void Time():
+{}
+{
+  < TIME >("AM" | "PM")
+}
+
+void BuildingItem():
+{}
+{
+  < BUILDING >< BUILDING_NUMBER>
+}
+
+void TimeOfYearItem():
+{}
+{
+  < TIME_OF_YEAR>< LABEL>< LBRACE >
+  StartItem()
+  EndItem()
+  (HoursItem())+
+  < RBRACE >
+}
+
+void StartItem():
+{}
+{
+  < START >Date()
+}
+
+void EndItem():
+{}
+{
+  < END >Date()
+}
+
+void HoursItem():
+{}
+{
+  < HOURS >Hours()
+}
+
+void StaffItem():
+{
+  int positionCount = 0, emailCount = 0, typeCount = 0, rateCount = 0;
+}
+{
+  < STAFF >< LABEL >< LBRACE >
+  (
+    PositionItem() {positionCount++;}
+    | EmailItem() {emailCount++;}
+    | TypeItem() {typeCount++;}
+    | RateItem() {rateCount++;}
+  )+
+  {
+    LibParser.ExactlyOneAssert(positionCount, "BUILDING", "STAFF");
+    LibParser.MoreThanOneAssert(emailCount, "EMAIL", "STAFF");
+    LibParser.ExactlyOneAssert(typeCount, "TYPE", "STAFF");
+    LibParser.ExactlyOneAssert(rateCount, "RATE", "STAFF");
+  }
+  < RBRACE >
+}
+
+void PositionItem():
+{}
+{
+  < POSITION >< LABEL >
+}
+
+void EmailItem():
+{}
+{
+  < EMAIL >< EMAIL_ADDRESS>
+}
+
+void TypeItem():
+{}
+{
+  < TYPE >< TYPE_OPTION >
+}
+
+void RateItem():
+{}
+{
+  < RATE >< RATE_VALUE >
+}
+
+void BookCollectionItem():
+{}
+{
+  < BOOK_COLLECTION>< LABEL >< LBRACE >
+  (BookItem())+
+  < RBRACE >
+}
+
+void BookItem():
+{
+  int titleCount = 0, authorCount = 0;
+}
+{
+  < BOOK >< BOOK_ID >< LBRACE >
+  (
+    TitleItem() {titleCount++;}
+    | AuthorItem() {authorCount++;}
+  )+
+  {
+    LibParser.ExactlyOneAssert(titleCount, "TITLE", "BOOK");
+    LibParser.MoreThanOneAssert(authorCount, "AUTHOR", "BOOK");
+  }
+  < RBRACE >
+}
+
+void TitleItem():
+{}
+{
+  < TITLE >(< BOOK_TITLE >|< LABEL >)
+}
+
+void AuthorItem():
+{}
+{
+  < AUTHOR >AuthorName()
+}
+
+void AuthorName():{}{  < QUOTE >AuthorLastName()< COMMA >(AuthorFirstName())+< QUOTE >}
+
+void AuthorLastName():
+{}
+{
+  < LONG_NAME >}
+
+void AuthorFirstName():
+{}
+{
+  < SHORT_NAME > | < LONG_NAME>}

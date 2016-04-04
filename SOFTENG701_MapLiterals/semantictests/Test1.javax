@@ -1,0 +1,22 @@
+public class Test1 {
+	int a;
+	
+	public void foo(boolean x) {
+		//a = false;
+		a = 12;
+		//a = 0.2;
+		//a = null;
+		//a = "asd";
+		
+		Test2 lol = new Test2();
+		lol = new Test2();
+		
+		//a = lol;
+		//a = new Test2();
+	}
+	
+	public class Test2 {
+	}
+}
+	
+
