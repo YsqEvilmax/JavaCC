@@ -35,7 +35,7 @@ public class IntegerLiteralExpr extends StringLiteralExpr {
 
     public IntegerLiteralExpr(int line, int column, String value) {
         super(line, column, value);
-        this.type = new ClassOrInterfaceType(line, column, null, "Integer", null);
+        this.type = new ClassOrInterfaceType(line, column, null, "int", null);
     }
 
     @Override

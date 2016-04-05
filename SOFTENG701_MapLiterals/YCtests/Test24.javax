@@ -1,0 +1,13 @@
+public class Test24 {
+
+    public int fun(String s, char c) {
+		int a;
+        if (true) {
+        	if (true) {
+        		if (true) {
+        			String a;
+        		}
+        	}
+        }
+    }
+}

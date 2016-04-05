@@ -34,7 +34,7 @@ public class LongLiteralExpr extends StringLiteralExpr {
 
     public LongLiteralExpr(int line, int column, String value) {
         super(line, column, value);
-        this.type = new ClassOrInterfaceType(line, column, null, "Long", null);
+        this.type = new ClassOrInterfaceType(line, column, null, "long", null);
     }
 
     @Override

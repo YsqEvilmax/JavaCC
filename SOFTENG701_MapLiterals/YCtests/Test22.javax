@@ -1,0 +1,28 @@
+public class Test22 {
+
+    public int fun(int a, String s, char c) {
+
+        class InnerClass {
+
+        }
+
+        if (true) {
+            int y;
+            {
+                class InnerClass {
+
+                }
+
+                InnerClass innerClass;
+            }
+
+            InnerClass b;
+        }
+
+        class OutterClass {
+
+        }
+
+        return 0;
+    }
+}

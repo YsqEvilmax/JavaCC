@@ -23,6 +23,8 @@ package japa.parser.ast.type;
 
 import japa.parser.ast.visitor.GenericVisitor;
 import japa.parser.ast.visitor.VoidVisitor;
+import symboltable.BuiltInTypeSymbol;
+import symboltable.VariableSymbol;
 
 /**
  * @author Julio Vilmar Gesser
@@ -42,6 +44,40 @@ public final class PrimitiveType extends Type {
 
     public Primitive getType() {
         return type;
+    }
+    
+    @Override
+    public symboltable.Type castType(int line)
+    {
+    	BuiltInTypeSymbol t = null;
+    	switch(type){
+    	case Boolean:
+    		t = new BuiltInTypeSymbol("boolean");
+    		break;
+    	case Char:
+    		t = new BuiltInTypeSymbol("char");
+    		break;
+    	case Byte:
+    		t = new BuiltInTypeSymbol("byte");
+    		break;
+    	case Short:
+    		t = new BuiltInTypeSymbol("short");
+    		break;
+    	case Int:
+    		t = new BuiltInTypeSymbol("int");
+    		break;
+    	case Long:
+    		t = new BuiltInTypeSymbol("long");
+    		break;
+    	case Float:
+    		t = new BuiltInTypeSymbol("float");
+    		break;
+    	case Double:
+    		t = new BuiltInTypeSymbol("double");
+    		break;
+    	}
+    	t.setDefinedLine(line);
+		return t;
     }
 
     @Override

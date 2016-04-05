@@ -23,6 +23,7 @@ package japa.parser.ast.type;
 
 import japa.parser.ast.visitor.GenericVisitor;
 import japa.parser.ast.visitor.VoidVisitor;
+import symboltable.ClassSymbol;
 
 import java.util.List;
 
@@ -58,6 +59,14 @@ public final class ClassOrInterfaceType extends Type {
     
     public void setTypeArgs(List<Type> typeArgs){
     	this.typeArgs = typeArgs;
+    }
+    
+    @Override
+    public symboltable.Type castType(int line)
+    {
+    	ClassSymbol t = new ClassSymbol(name);
+    	t.setDefinedLine(line);
+    	return t;
     }
 
     @Override

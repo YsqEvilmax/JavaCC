@@ -32,4 +32,5 @@ public abstract class Type extends Node {
         super(line, column);
     }
 
+    public abstract symboltable.Type castType(int line);
 }

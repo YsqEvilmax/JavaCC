@@ -42,6 +42,7 @@ import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.InstanceOfExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.IntegerLiteralMinValueExpr;
+import japa.parser.ast.expr.LiteralExpr;
 import japa.parser.ast.expr.LongLiteralExpr;
 import japa.parser.ast.expr.LongLiteralMinValueExpr;
 import japa.parser.ast.expr.MapInitializationExpr;
@@ -98,6 +99,17 @@ import symboltable.Symbol;
 public class ClassVisitor implements VoidVisitor<Object> {
 
 	private Scope currentScope;
+	
+	static void checkClass(Symbol target, Symbol resloved, Node n )
+	{
+		if (resloved != target.getType()) {
+			throw new A2SemanticsException(resloved.getName()
+					+ " is not a valid type for variable "
+					+ target.getName() + " ("
+					+ target.getType().getName() + ") on line "
+					+ n.getBeginLine() + ".");
+		}
+	}
 
 	@Override
 	public void visit(Node n, Object arg) {
@@ -185,75 +197,21 @@ public class ClassVisitor implements VoidVisitor<Object> {
 		}
 
 		if (n.getBeginLine() < target.getDefinedLine()) {
-			// Variables cannot be used prior to declaration.
 			throw new A2SemanticsException("Variable " + target.getName()
 					+ " has not been defined on line " + n.getBeginLine()
 					+ "! (Is defined on line " + target.getDefinedLine());
 		}
 
 		String t = target.getType().getName();
-
+		
 		if (expr instanceof BinaryExpr) {
 			expr = ((BinaryExpr) expr).getLeft();
 		}
-
-		if (expr instanceof BooleanLiteralExpr) {
-			if (t != "boolean") {
-				throw new A2SemanticsException(
-						"boolean is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
-		} else if (expr instanceof NullLiteralExpr) {
-			if (t == "int" || t == "byte" || t == "short" || t == "long"
-					|| t == "double" || t == "float" || t == "boolean"
-					|| t == "char") {
-				throw new A2SemanticsException("Primitive variable "
-						+ target.getName() + " (" + target.getType().getName()
-						+ ") cannot be set to null on line " + n.getBeginLine()
-						+ ".");
-			}
-		} else if (expr instanceof CharLiteralExpr) {
-			if (t != "char") {
-				throw new A2SemanticsException(
-						"char is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
-		} else if (expr instanceof DoubleLiteralExpr) {
-			if (t != "double") {
-				throw new A2SemanticsException(
-						"double is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
-		} else if (expr instanceof IntegerLiteralExpr) {
-			if (t != "int") {
-				throw new A2SemanticsException(
-						"int is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
-		} else if (expr instanceof LongLiteralExpr) {
-			if (t != "long") {
-				throw new A2SemanticsException(
-						"long is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
-		} else if (expr instanceof StringLiteralExpr) {
-			if (t != "String") {
-				throw new A2SemanticsException(
-						"String is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-			}
+		
+		
+        //valid primitive type
+		if (expr instanceof LiteralExpr) {
+			TypeVisitor.checkPrimitiveType(target, (LiteralExpr)expr, n);
 		} else if (expr instanceof MethodCallExpr) {
 			Symbol resolvedSymbol = currentScope
 					.resolve(((MethodCallExpr) expr).getName().toString());
@@ -263,43 +221,21 @@ public class ClassVisitor implements VoidVisitor<Object> {
 						+ ((MethodCallExpr) expr).getName().toString()
 						+ " was null! (on line " + n.getBeginLine() + ").");
 			}
-
-			if (resolvedSymbol instanceof MethodSymbol) {
-				MethodSymbol m = (MethodSymbol) resolvedSymbol;
-				String returnType = m.getReturnType().getName();
-				if (t != returnType) {
-					throw new A2SemanticsException(returnType
-							+ " is not a valid type for variable "
-							+ target.getName() + " ("
-							+ target.getType().getName() + ") on line "
-							+ n.getBeginLine() + ".");
-				}
-			} else {
-				throw new A2SemanticsException("Retrieved Symbol "
-						+ resolvedSymbol.getName() + " ("
-						+ resolvedSymbol.getClass().getSimpleName()
-						+ ") from Scope " + currentScope.getScopeName()
-						+ " (expected MethodSymbol).");
-			}
+			MethodVisitor.checkMethod(target, resolvedSymbol, n);
 		} else if (expr instanceof ObjectCreationExpr) {
-			Symbol resolvedSymbol = currentScope
-					.resolve(((ObjectCreationExpr) expr).getType().getName());
-
-			if (resolvedSymbol != target.getType()) {
-				throw new A2SemanticsException(resolvedSymbol.getName()
-						+ " is not a valid type for variable "
-						+ target.getName() + " (" + target.getType().getName()
-						+ ") on line " + n.getBeginLine() + ".");
-			}
+			Symbol resolvedSymbol = currentScope.resolve(((ObjectCreationExpr) expr).getType().getName());
+			ClassVisitor.checkClass(target, resolvedSymbol, n);
 		} else if (expr instanceof NameExpr) {
 			Symbol resolvedSymbol = currentScope.resolve(((NameExpr) expr)
 					.getName());
-
-			if (resolvedSymbol.getType() != target.getType()) {
-				throw new A2SemanticsException(resolvedSymbol.getName()
-						+ " is not a valid return type for method "
-						+ target.getName() + " (" + target.getType().getName()
-						+ ") on line " + n.getBeginLine() + ".");
+			if(resolvedSymbol != null)
+			{
+    			if (resolvedSymbol.getType() != target.getType()) {
+    				throw new A2SemanticsException(resolvedSymbol.getName()
+    						+ " is not a valid return type for method "
+    						+ target.getName() + " (" + target.getType().getName()
+    						+ ") on line " + n.getBeginLine() + ".");
+    			}
 			}
 		}
 	}
@@ -390,13 +326,12 @@ public class ClassVisitor implements VoidVisitor<Object> {
 		currentScope = n.getEnclosingScope();
 
 		Symbol target = currentScope.resolve(n.getTarget().toString());
-
+		
 		if (target == null) {
 			throw new A2SemanticsException("Variable "
 					+ n.getTarget().toString()
 					+ " has not been defined on line " + n.getBeginLine() + "!");
 		}
-
 		if (n.getBeginLine() < target.getDefinedLine()) {
 			// Variables cannot be used prior to declaration.
 			throw new A2SemanticsException("Variable " + target.getName()
@@ -415,97 +350,19 @@ public class ClassVisitor implements VoidVisitor<Object> {
 				expr = ((BinaryExpr) expr).getLeft();
 			}
 
-			if (expr instanceof BooleanLiteralExpr) {
-				if (t != "boolean") {
-					throw new A2SemanticsException(
-							"boolean is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof NullLiteralExpr) {
-				if (t == "int" || t == "byte" || t == "short" || t == "long"
-						|| t == "double" || t == "float" || t == "boolean"
-						|| t == "char") {
-					throw new A2SemanticsException("Primitive variable "
-							+ target.getName() + " ("
-							+ target.getType().getName()
-							+ ") cannot be set to null on line "
-							+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof CharLiteralExpr) {
-				if (t != "char") {
-					throw new A2SemanticsException(
-							"char is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof DoubleLiteralExpr) {
-				if (t != "double") {
-					throw new A2SemanticsException(
-							"double is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof IntegerLiteralExpr) {
-				if (t != "int") {
-					throw new A2SemanticsException(
-							"int is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof LongLiteralExpr) {
-				if (t != "long") {
-					throw new A2SemanticsException(
-							"long is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
-			} else if (expr instanceof StringLiteralExpr) {
-				if (t != "String") {
-					throw new A2SemanticsException(
-							"String is not a valid type for variable "
-									+ target.getName() + " ("
-									+ target.getType().getName() + ") on line "
-									+ n.getBeginLine() + ".");
-				}
+	        //valid primitive type
+			if (expr instanceof LiteralExpr) {
+				TypeVisitor.checkPrimitiveType(target, (LiteralExpr)expr, n);
 			} else if (expr instanceof MethodCallExpr) {
 				Symbol resolvedSymbol = currentScope
 						.resolve(((MethodCallExpr) expr).getName().toString());
 
-				if (resolvedSymbol instanceof MethodSymbol) {
-					MethodSymbol m = (MethodSymbol) resolvedSymbol;
-					String returnType = m.getReturnType().getName();
-					if (t != returnType) {
-						throw new A2SemanticsException(returnType
-								+ " is not a valid type for variable "
-								+ target.getName() + " ("
-								+ target.getType().getName() + ") on line "
-								+ n.getBeginLine() + ".");
-					}
-				} else {
-					throw new A2SemanticsException("Retrieved Symbol "
-							+ resolvedSymbol.getName() + " ("
-							+ resolvedSymbol.getClass().getSimpleName()
-							+ ") from Scope " + currentScope.getScopeName()
-							+ " (expected MethodSymbol).");
-				}
+				MethodVisitor.checkMethod(target, resolvedSymbol, n);
 			} else if (expr instanceof ObjectCreationExpr) {
 				Symbol resolvedSymbol = currentScope
 						.resolve(((ObjectCreationExpr) expr).getType()
 								.getName());
-
-				if (resolvedSymbol != target.getType()) {
-					throw new A2SemanticsException(resolvedSymbol.getName()
-							+ " is not a valid type for variable "
-							+ target.getName() + " ("
-							+ target.getType().getName() + ") on line "
-							+ n.getBeginLine() + ".");
-				}
+				ClassVisitor.checkClass(target, resolvedSymbol, n);
 			} else if (expr instanceof NameExpr) {
 				Symbol resolvedSymbol = currentScope.resolve(((NameExpr) expr)
 						.getName());

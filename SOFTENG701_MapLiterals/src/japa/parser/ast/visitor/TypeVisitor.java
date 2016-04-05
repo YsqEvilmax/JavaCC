@@ -97,10 +97,24 @@ import symboltable.ClassSymbol;
 import symboltable.InterfaceSymbol;
 import symboltable.Scope;
 import symboltable.Symbol;
+import symboltable.Type;
 
 public class TypeVisitor implements VoidVisitor<Object> {
 
 	private Scope currentScope;
+	
+	static public void checkPrimitiveType(Symbol target, LiteralExpr expr, Node n)
+	{
+		String t = target.getType().getName();
+			String ltype =((LiteralExpr)expr).getType().getName();
+			if (t != ltype) {
+				throw new A2SemanticsException(ltype +
+						" is not a valid type for variable/method "
+								+ target.getName() + " ("
+								+ t + ") on line "
+								+ n.getBeginLine() + ".");
+			}		
+	}
 
 	private void visitMembers(List<BodyDeclaration> members, Object arg) {
 		for (BodyDeclaration member : members) {
@@ -368,6 +382,31 @@ public class TypeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(BinaryExpr n, Object arg) {
+		currentScope = n.getEnclosingScope();
+		String lType = null, rType = null;
+		if(n.getLeft() instanceof LiteralExpr){lType = ((LiteralExpr)n.getLeft()).getType().getName();}
+		if(n.getLeft() instanceof NameExpr){
+			Symbol symbol = currentScope.resolve(((NameExpr)n.getLeft()).getName());
+			if(symbol != null){
+				lType = symbol.getType().getName();
+			}		
+		}
+		if(n.getRight() instanceof LiteralExpr){rType = ((LiteralExpr)n.getRight()).getType().getName();}
+		if(n.getRight() instanceof NameExpr){
+			Symbol symbol = currentScope.resolve(((NameExpr)n.getRight()).getName());
+			if(symbol != null){
+				rType = symbol.getType().getName();
+			}	
+		}
+		
+		if(lType != rType)
+		{
+			throw new A2SemanticsException(lType +
+						" is not compatible to "
+								+ rType
+								+ " on line "
+								+ n.getBeginLine() + ".");			
+		}
 		n.getLeft().accept(this, arg);
 
 		n.getRight().accept(this, arg);

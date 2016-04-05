@@ -34,7 +34,7 @@ public final class CharLiteralExpr extends StringLiteralExpr {
 
     public CharLiteralExpr(int line, int column, String value) {
         super(line, column, value);
-        this.type = new ClassOrInterfaceType(line, column, null, "Char", null);
+        this.type = new ClassOrInterfaceType(line, column, null, "char", null);
     }
 
     @Override

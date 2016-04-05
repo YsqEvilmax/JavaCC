@@ -3,20 +3,14 @@ package symboltable;
 import java.util.List;
 
 public class MethodSymbol extends ScopedSymbol {
-
-	private Type returnType;
 	private List<Type> parameters;
 
 	public MethodSymbol(String name) {
 		super(name, null);
 	}
 
-	public Type getReturnType() {
-		return returnType;
-	}
-
-	public void setReturnType(Type returnType) {
-		this.returnType = returnType;
+	public void setType(Type type) {
+		this.type = type;
 	}
 
 	public List<Type> getParameters() {

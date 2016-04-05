@@ -1,0 +1,9 @@
+public class Test2 {
+
+	public void bar() {
+		int b = 456; // visit(VariableDeclarationExpr
+		
+		// ERROR: duplicate variable declaration
+		int b = 789; // visit(VariableDeclarationExpr
+	}
+}

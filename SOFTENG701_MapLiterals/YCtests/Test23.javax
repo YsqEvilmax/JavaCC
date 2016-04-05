@@ -1,0 +1,15 @@
+public class Test23 {
+
+    public int fun(String s, char c) {
+		int a;
+        while (true) {
+        	try {
+        		int a;
+        		if (true) {
+        			int a;
+        		}
+        	} catch (Exception e) {
+        	}
+        }
+    }
+}

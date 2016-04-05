@@ -1,0 +1,9 @@
+//error duplicate class definition
+
+
+public class Test17 {
+}
+
+class Test17 { 
+
+}

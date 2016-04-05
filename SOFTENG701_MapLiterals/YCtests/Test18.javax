@@ -1,0 +1,12 @@
+//error line 7 pass but line 9 fail
+
+public class Test18 {
+    public int x;
+
+    public Test18(int a, String s, char c) {
+        int x = 0; // Should not report error
+        if (true) {
+            int x = a; // ERROR: x already defined
+        }
+    }
+}

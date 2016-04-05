@@ -1,0 +1,8 @@
+// require a return expression 
+
+public class EnclosingClass {
+
+    public int fun() {
+
+    }
+}

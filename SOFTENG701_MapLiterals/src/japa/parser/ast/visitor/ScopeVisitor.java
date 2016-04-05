@@ -100,8 +100,10 @@ import symboltable.LocalScope;
 import symboltable.MethodSymbol;
 import symboltable.OpenScope;
 import symboltable.Scope;
+import symboltable.ScopedSymbol;
 import symboltable.Symbol;
 import symboltable.Type;
+import symboltable.VariableSymbol;
 
 public class ScopeVisitor implements VoidVisitor<Object> {
 
@@ -178,32 +180,23 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Object arg) {
+		ScopedSymbol symbol = null;
 		if (n.isInterface()) {
-			InterfaceSymbol interfaceSymbol = new InterfaceSymbol(n.getName());
-			interfaceSymbol.setEnclosingScope(currentScope);
-
-			currentScope.define(interfaceSymbol);
-			currentScope = interfaceSymbol;
-			n.setEnclosingScope(currentScope);
-
-			if (n.getMembers() != null) {
-				for (BodyDeclaration b : n.getMembers()) {
-					b.accept(this, arg);
-				}
-			}
+			symbol = new InterfaceSymbol(n.getName());
 			
 		} else {
-			ClassSymbol classSymbol =  new ClassSymbol(n.getName());
-			classSymbol.setEnclosingScope(currentScope);
+			symbol =  new ClassSymbol(n.getName());
+		}
+		symbol.setDefinedLine(n.getBeginLine());	
+		symbol.setEnclosingScope(currentScope);
 
-			currentScope.define(classSymbol);
-			currentScope = classSymbol;
-			n.setEnclosingScope(currentScope);
+		currentScope.define(symbol);
+		currentScope = symbol;
+		n.setEnclosingScope(currentScope);
 
-			if (n.getMembers() != null) {
-				for (BodyDeclaration b : n.getMembers()) {
-					b.accept(this, arg);
-				}
+		if (n.getMembers() != null) {
+			for (BodyDeclaration b : n.getMembers()) {
+				b.accept(this, arg);
 			}
 		}
 
@@ -314,6 +307,14 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 	@Override
 	public void visit(VariableDeclaratorId n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		if(arg instanceof japa.parser.ast.type.Type)
+		{
+			japa.parser.ast.type.Type t = (japa.parser.ast.type.Type)arg;
+			Type realType = t.castType(n.getBeginLine());
+			Symbol s = new VariableSymbol(n.getName(), realType);
+			s.setDefinedLine(n.getBeginLine());
+		    currentScope.define(s);	
+		}
 	}
 
 	@Override
@@ -323,9 +324,15 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 		Symbol returnSymbol = currentScope.resolve(n.getName());
 		
+		if(returnSymbol == null)
+		{
+			throw new A2SemanticsException("Require a valid return type of method/constructor "
+					+ n.getName() + "!");
+		}
+		
 		if (returnSymbol instanceof Type) {
 			Type returnType = (Type) returnSymbol;
-			methodSymbol.setReturnType(returnType);
+			methodSymbol.setType(returnType);
 		} else {
 			throw new A2SemanticsException("Return type of method/constructor "
 					+ n.getName() + " is not a Type! (is "
@@ -350,7 +357,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 		Type returnType = currentScope.resolveType(n.getType().toString());
 
-		methodSymbol.setReturnType(returnType);
+		methodSymbol.setType(returnType);
 
 		currentScope.getEnclosingScope().define(methodSymbol);
 
@@ -667,8 +674,8 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 		for (Iterator<VariableDeclarator> i = n.getVars().iterator(); i
 				.hasNext();) {
-			VariableDeclarator v = i.next();
-			v.accept(this, arg);
+			VariableDeclarator v = i.next();	
+			v.accept(this, n.getType());
 		}
 	}
 

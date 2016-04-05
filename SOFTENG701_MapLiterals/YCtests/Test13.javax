@@ -1,0 +1,12 @@
+//error no fun
+
+public class Test13 {
+    public void fun() {
+        Child ben = new Child();
+        ben.fun(); // ERROR: cannot resolve method fun().
+    }
+
+    public class Child {
+        public int b;
+    }
+}

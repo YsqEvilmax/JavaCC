@@ -37,7 +37,7 @@ public final class BooleanLiteralExpr extends LiteralExpr {
     public BooleanLiteralExpr(int line, int column, Boolean value) {
         super(line, column);
         this.value = value;
-        this.type = new ClassOrInterfaceType(line, column, null, "Boolean", null);
+        this.type = new ClassOrInterfaceType(line, column, null, "boolean", null);
     }
 
     public Boolean getValue() {

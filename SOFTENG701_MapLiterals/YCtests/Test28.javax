@@ -1,0 +1,6 @@
+//return type
+public class Test28 {
+    public fun() {
+        return 0;
+    }
+}

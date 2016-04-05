@@ -33,7 +33,7 @@ public abstract class BaseScope implements Scope {
 	public void define(Symbol symbol) {
 		String name = symbol.getName();
 		if (this.resolve(name) != null) {
-			throw new A2SemanticsException("The symbol " + name + "(on line "
+			throw new A2SemanticsException("The symbol " + name + " (on line "
 					+ symbol.getDefinedLine() + ")" + " has already been defined in scope " 
 					+ getScopeName() + "(on line "
 					+ this.resolve(name).getDefinedLine() + ")" + "!");

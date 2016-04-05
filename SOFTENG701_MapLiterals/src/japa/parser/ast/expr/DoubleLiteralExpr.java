@@ -34,7 +34,7 @@ public final class DoubleLiteralExpr extends StringLiteralExpr {
 
     public DoubleLiteralExpr(int line, int column, String value) {
         super(line, column, value);
-        this.type = new ClassOrInterfaceType(line, column, null, "Double", null);
+        this.type = new ClassOrInterfaceType(line, column, null, "double", null);
     }
 
     @Override

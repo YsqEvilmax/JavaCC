@@ -58,4 +58,10 @@ public final class WildcardType extends Type {
         return v.visit(this, arg);
     }
 
+	@Override
+	public symboltable.Type castType(int line) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

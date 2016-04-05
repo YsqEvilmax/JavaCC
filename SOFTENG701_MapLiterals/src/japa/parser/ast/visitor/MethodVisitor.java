@@ -41,6 +41,7 @@ import japa.parser.ast.expr.FieldAccessExpr;
 import japa.parser.ast.expr.InstanceOfExpr;
 import japa.parser.ast.expr.IntegerLiteralExpr;
 import japa.parser.ast.expr.IntegerLiteralMinValueExpr;
+import japa.parser.ast.expr.LiteralExpr;
 import japa.parser.ast.expr.LongLiteralExpr;
 import japa.parser.ast.expr.LongLiteralMinValueExpr;
 import japa.parser.ast.expr.MapInitializationExpr;
@@ -101,6 +102,32 @@ import symboltable.Type;
 public class MethodVisitor implements VoidVisitor<Object> {
 
 	private Scope currentScope;
+	
+	static public void checkMethod(Symbol target, Symbol resolved, Node n)
+	{
+		if (resolved instanceof MethodSymbol) {
+			MethodSymbol m = (MethodSymbol) resolved;
+			String returnType = m.getType().getName();
+			if (target.getType().getName() != returnType) {
+				throw new A2SemanticsException(
+						"The method "
+						+ resolved.getName()
+						+ " should return a value of type "
+						+ target.getType().getName()
+						+ "(On line "
+						+ n.getBeginLine() + ".)");
+			}
+		} else {
+			throw new A2SemanticsException(
+					"Retrieved Symbol "
+							+ resolved.getName()
+							+ " ("
+							+ resolved.getClass()
+									.getSimpleName()
+							+ ") from current scope "
+							+ " (expected MethodSymbol).");
+		}
+	}
 
 	@Override
 	public void visit(Node n, Object arg) {
@@ -230,133 +257,45 @@ public class MethodVisitor implements VoidVisitor<Object> {
 		MethodSymbol theMethod = ((MethodSymbol) currentScope.resolve(n.getName()));
 		boolean hasReturn = false;
 
-		if (theMethod.getReturnType().getName() == "void") {
+		if (theMethod.getType().getName() == "void") {
+			//return is not necessary for void
 			hasReturn = true;
 		}
 
-		String t = theMethod.getReturnType().getName();
+		String t = theMethod.getType().getName();
 
 		if (n.getBody() != null) {
 			BlockStmt body = n.getBody();
 			if (body.getStmts() != null) {
 				for (Statement s : body.getStmts()) {
 					if (s instanceof ReturnStmt) {
+						hasReturn = true;
 						ReturnStmt r = (ReturnStmt) s;
 						Expression expr = r.getExpr();
+						if (theMethod.getType().getName() == "void" && expr != null) {
+							throw new A2SemanticsException("Method " + n.getName()
+									+ " (on line " + n.getBeginLine()
+									+ ") should return void, check the return at "
+									+ r.getBeginLine() + "!");
+						}
 
 						if (expr instanceof BinaryExpr) {
 							expr = ((BinaryExpr) expr).getLeft();
 						}
 
-						if (expr instanceof NullLiteralExpr) {
-							hasReturn = true;
-							if (t == "int" || t == "byte" || t == "short"
-									|| t == "long" || t == "double"
-									|| t == "float" || t == "boolean"
-									|| t == "char") {
-								throw new A2SemanticsException("Method "
-										+ theMethod.getName() + " ("
-										+ theMethod.getReturnType().getName()
-										+ ") cannot return null! (On line "
-										+ n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof CharLiteralExpr) {
-							hasReturn = true;
-							if (t != "char") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof DoubleLiteralExpr) {
-							hasReturn = true;
-							if (t != "double") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof IntegerLiteralExpr) {
-							hasReturn = true;
-							if (t != "int") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof LongLiteralExpr) {
-							hasReturn = true;
-							if (t != "long") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof StringLiteralExpr) {
-							hasReturn = true;
-							if (t != "String") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof BooleanLiteralExpr) {
-							hasReturn = true;
-							if (t != "boolean") {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
-						} else if (expr instanceof MethodCallExpr) {
-							hasReturn = true;
+						
+						if (expr instanceof LiteralExpr) {
+							TypeVisitor.checkPrimitiveType(theMethod, (LiteralExpr)expr, n);
+						} else if (expr instanceof MethodCallExpr) {							
 							Symbol resolvedSymbol = currentScope
 									.resolve(((MethodCallExpr) expr).getName()
 											.toString());
-
-							if (resolvedSymbol instanceof MethodSymbol) {
-								MethodSymbol m = (MethodSymbol) resolvedSymbol;
-								String returnType = m.getReturnType().getName();
-								if (t != returnType) {
-									throw new A2SemanticsException(
-											"The method "
-													+ theMethod.getName()
-													+ " must return a value of type "
-													+ theMethod.getReturnType()
-															.getName()
-													+ "(On line "
-													+ n.getBeginLine() + ".)");
-								}
-							} else {
-								throw new A2SemanticsException(
-										"Retrieved Symbol "
-												+ resolvedSymbol.getName()
-												+ " ("
-												+ resolvedSymbol.getClass()
-														.getSimpleName()
-												+ ") from Scope "
-												+ currentScope.getScopeName()
-												+ " (expected MethodSymbol).");
-							}
+							MethodVisitor.checkMethod(theMethod, resolvedSymbol, n);
 						} else if (expr instanceof ObjectCreationExpr) {
-							hasReturn = true;
 							Symbol resolvedSymbol = currentScope
 									.resolve(((ObjectCreationExpr) expr)
 											.getType().getName());
-
-							if (resolvedSymbol != theMethod.getReturnType()) {
-								throw new A2SemanticsException("The method "
-										+ theMethod.getName()
-										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
-										+ "(On line " + n.getBeginLine() + ".)");
-							}
+							ClassVisitor.checkClass(theMethod, resolvedSymbol, n);
 						} else if (expr instanceof NameExpr) {
 							hasReturn = true;
 							Symbol resolvedSymbol = currentScope
@@ -364,11 +303,11 @@ public class MethodVisitor implements VoidVisitor<Object> {
 
 							if (resolvedSymbol == null
 									|| resolvedSymbol.getType() != theMethod
-									.getReturnType()) {
+									.getType()) {
 								throw new A2SemanticsException("The method "
 										+ theMethod.getName()
 										+ " must return a value of type "
-										+ theMethod.getReturnType().getName()
+										+ theMethod.getType().getName()
 										+ "(On line " + n.getBeginLine() + ".)");
 							}
 						}
@@ -377,12 +316,11 @@ public class MethodVisitor implements VoidVisitor<Object> {
 			}
 
 			body.accept(this, arg);
-
-			if (!hasReturn) {
+			
+			if(!hasReturn){
 				throw new A2SemanticsException("Method " + n.getName()
-						+ " (on line " + n.getBeginLine()
-						+ ") does not return a value of type "
-						+ theMethod.getReturnType().getName());
+				+ " (on line " + n.getBeginLine()
+				+ ") should return a vlaue of type " + theMethod.getType().getName() + "!");
 			}
 		}
 	}
@@ -528,108 +466,20 @@ public class MethodVisitor implements VoidVisitor<Object> {
 						expr = ((BinaryExpr) expr).getLeft();
 					}
 
-					if (expr instanceof NullLiteralExpr) {
-						if (t == "int" || t == "byte" || t == "short"
-								|| t == "long" || t == "double" || t == "float"
-								|| t == "boolean" || t == "char") {
-							throw new A2SemanticsException(
-									"Primitive parameter of method "
-											+ m.getName()
-											+ " cannot be null! (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof CharLiteralExpr) {
-						if (t != "char") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type char (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof DoubleLiteralExpr) {
-						if (t != "double") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type double (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof IntegerLiteralExpr) {
-						if (t != "int") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type int (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof LongLiteralExpr) {
-						if (t != "long") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type long (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof StringLiteralExpr) {
-						if (t != "String") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type String (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
-					} else if (expr instanceof BooleanLiteralExpr) {
-						if (t != "boolean") {
-							throw new A2SemanticsException(
-									"Method "
-											+ m.getName()
-											+ " does not have a parameter of type boolean (expected "
-											+ t + ") (On line "
-											+ n.getBeginLine() + ".)");
-						}
+					
+					if (expr instanceof LiteralExpr) {
+						TypeVisitor.checkPrimitiveType(m, (LiteralExpr)expr, n);
 					} else if (expr instanceof MethodCallExpr) {
 						Symbol resolvedSymbol = currentScope
 								.resolve(((MethodCallExpr) expr).getName()
 										.toString());
-
-						if (resolvedSymbol instanceof MethodSymbol) {
-							MethodSymbol method = (MethodSymbol) resolvedSymbol;
-							String returnType = method.getReturnType()
-									.getName();
-							if (t != returnType) {
-								throw new A2SemanticsException("Method "
-										+ m.getName()
-										+ " does not have a parameter of type "
-										+ returnType + " (expected " + t
-										+ ") (On line " + n.getBeginLine()
-										+ ".)");
-							}
-						} else {
-							throw new A2SemanticsException("Retrieved Symbol "
-									+ resolvedSymbol.getName() + " ("
-									+ resolvedSymbol.getClass().getSimpleName()
-									+ ") from Scope "
-									+ currentScope.getScopeName()
-									+ " (expected MethodSymbol).");
-						}
+						MethodVisitor.checkMethod(m, resolvedSymbol, n);
 					} else if (expr instanceof ObjectCreationExpr) {
 						Symbol resolvedSymbol = currentScope
 								.resolve(((ObjectCreationExpr) expr).getType()
 										.getName());
 
-						if (resolvedSymbol.getType().getName() != t) {
-							throw new A2SemanticsException("Method "
-									+ m.getName()
-									+ " does not have a parameter of type "
-									+ resolvedSymbol.getType().getName()
-									+ " (expected " + t
-									+ ") (On line " + n.getBeginLine() + ".)");
-						}
+						ClassVisitor.checkClass(m, resolvedSymbol, n);
 					} else if (expr instanceof NameExpr) {
 						Symbol resolvedSymbol = currentScope
 								.resolve(((NameExpr) expr).getName());

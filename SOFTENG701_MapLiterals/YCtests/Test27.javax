@@ -1,0 +1,26 @@
+//error class up casting
+
+public class Test27 {
+
+	public void fun() {
+		Vehicle vehicle = new Car();
+		((Car)vehicle).getSpeed();
+		vehicle.drive();
+		Car car = new Vehicle();
+	}
+
+    class Vehicle {
+        protected int speed;
+        public void drive() {
+
+        }
+    }
+
+    class Car extends Vehicle {
+
+        public String getSpeed() {
+            int s = super.speed;
+            int y = speed;
+        }
+    }
+}

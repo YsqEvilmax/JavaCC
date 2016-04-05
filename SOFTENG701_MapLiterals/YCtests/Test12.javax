@@ -1,0 +1,15 @@
+//error class.method
+
+
+public class Test12 {
+    public int a;
+
+    public void fun() {
+        Child ben = new Child();
+        ben.b = ben.a; // ERROR: cannot resolve symbol a.
+    }
+
+    public class Child {
+        public int b;
+    }
+}

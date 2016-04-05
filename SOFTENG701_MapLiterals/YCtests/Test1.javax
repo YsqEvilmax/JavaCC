@@ -1,0 +1,20 @@
+public class EnclosingClass {
+
+    public void fun() {
+        int a = 0;
+        while (true) {
+            int a = 1; // enclosing scope
+        }
+
+        while (a == 0) {
+            int b = 1; // local scope
+            a = b;
+        }
+
+        b++; // out of scope
+
+        this.a++;
+    }
+
+    int a;
+}
