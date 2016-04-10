@@ -23,6 +23,7 @@ package japa.parser.ast.type;
 
 import japa.parser.ast.visitor.GenericVisitor;
 import japa.parser.ast.visitor.VoidVisitor;
+import symboltable.BuiltInTypeSymbol;
 
 /**
  * @author Julio Vilmar Gesser
@@ -44,9 +45,10 @@ public final class VoidType extends Type {
     }
 
 	@Override
-	public symboltable.Type castType(int line) {
-		// TODO Auto-generated method stub
-		return null;
+	public symboltable.Type castType() {
+		BuiltInTypeSymbol t = new BuiltInTypeSymbol("null");
+		t.setDefinedLine(this.getBeginLine());
+		return t;
 	}
 
 }

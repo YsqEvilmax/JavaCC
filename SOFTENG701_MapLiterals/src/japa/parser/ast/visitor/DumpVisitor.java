@@ -133,12 +133,7 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     	{
     		ClassOrInterfaceType mapType = (ClassOrInterfaceType)((ReferenceType)type).getType();
 	        if(mapType.getName().equals("Map")
-	        || mapType.getName().equals("HashMap") 
-			|| mapType.getName().equals("IdentityHashMap") 
-			|| mapType.getName().equals("ConcurrentHashMap")
-			|| mapType.getName().equals("EnumMap")
-			|| mapType.getName().equals("TreeMap")
-			|| mapType.getName().equals("ConcurrentSkipListMap"))
+	        || mapType.getName().equals("HashMap"))
 	        {
 	    		if(mapType.getTypeArgs() == null)
 	    			return true;
@@ -377,7 +372,7 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     }
 
     public void visit(PrimitiveType n, Object arg) {
-        switch (n.getType()) {
+            switch (n.getType()) {
             case Boolean:
                 printer.print("boolean");
                 break;
@@ -953,9 +948,14 @@ public final class DumpVisitor implements VoidVisitor<Object> {
             VariableDeclarator v = i.next();
             v.accept(this, n.getType());
             if (i.hasNext()) {
-                printer.print(", ");
+            	if(!isMapSimplized(n.getType())){
+            		printer.print(", ");
+            	}          
             }
         }
+        if(!isMapSimplized(n.getType())){
+    		printer.printLn(";");
+    	}
     }
 
     public void visit(TypeDeclarationStmt n, Object arg) {
@@ -998,7 +998,9 @@ public final class DumpVisitor implements VoidVisitor<Object> {
 
     public void visit(ExpressionStmt n, Object arg) {
         n.getExpression().accept(this, arg);
-        printer.print(";");
+        if(!(n.getExpression() instanceof VariableDeclarationExpr)){
+        	printer.print(";");
+        }    
     }
 
     public void visit(SwitchStmt n, Object arg) {
@@ -1344,8 +1346,7 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     	printer.printLn("();");
     	for(int i = 0; i < n.getKeys().size(); i++)
     	{
-    		printer.print(id.getName()+".put(" + n.getKeys().get(i) + ", " + n.getValues().get(i) + ")");
-    		if(i < n.getKeys().size() - 1){ printer.printLn(";");}  		
+    		printer.printLn(id.getName()+".put(" + n.getKeys().get(i) + ", " + n.getValues().get(i) + ");");		
     	}  
     } 
 }

@@ -2304,8 +2304,8 @@ Expression AllocationExpression(Expression scope):
 	//Shawn 17:22
 	List keys = new LinkedList();
 	List values = new LinkedList();
-	LiteralExpr key;
-	LiteralExpr value;
+	Expression key;
+	Expression value;
 	//Shawn 17:22
 	int line;
 	int column;
@@ -2338,8 +2338,8 @@ Expression AllocationExpression(Expression scope):
 	      { ret = new ObjectCreationExpr(line, column, scope, (ClassOrInterfaceType) type, typeArgs, args, anonymousBody); }
 		//Shawn 17:14
 	    |
-	      "{"(key = Literal()":"value = Literal()) {	keys.add(key); values.add(value); }
-	      (","key = Literal(){keys.add(key);}":"value = Literal(){values.add(value);})* "}"	      {
+	      "{"(key = MapItem()":"value = MapItem()) {	keys.add(key); values.add(value); }
+	      (","key = MapItem(){keys.add(key);}":"value = MapItem(){values.add(value);})* "}"	      {
 	          ret = new MapInitializationExpr(line, column,  scope,
 	          (ClassOrInterfaceType)type, typeArgs==null?new LinkedList():typeArgs,
 	           keys, values);	          	        	      }
@@ -2348,6 +2348,16 @@ Expression AllocationExpression(Expression scope):
   )
   { return ret; }
 }
+
+Expression MapItem():
+{
+  Expression ret;}
+{
+  (    ret = Literal()
+    | ret = Name()
+   )
+  {return ret;}}
+
 
 /*
  * The third LOOKAHEAD specification below is to parse to PrimarySuffix

@@ -47,7 +47,7 @@ public final class PrimitiveType extends Type {
     }
     
     @Override
-    public symboltable.Type castType(int line)
+    public symboltable.Type castType()
     {
     	BuiltInTypeSymbol t = null;
     	switch(type){
@@ -76,7 +76,7 @@ public final class PrimitiveType extends Type {
     		t = new BuiltInTypeSymbol("double");
     		break;
     	}
-    	t.setDefinedLine(line);
+    	t.setDefinedLine(this.getBeginLine());
 		return t;
     }
 

@@ -30,6 +30,20 @@ public class StudentSample {
 		},
 		
 		states3 = new HashMap {
+		    1.1 : "Alabama",
+		    2.2 : "Alaska",
+		    3.4 : "Arizona", 
+		    4.6 : "Wyoming"
+		},
+		
+		states4 = new HashMap {
+		    1.1 : 1.414,
+		    2.2 : 1.414,
+		    3.4 : 1.414, 
+		    4.6 : 1.414
+		},
+		
+		states5 = new HashMap {
 		    s1 : "Alabama",
 		    s2 : "Alaska",
 		    s3 : "Arizona"

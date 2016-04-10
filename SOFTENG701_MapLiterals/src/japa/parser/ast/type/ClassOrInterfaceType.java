@@ -62,10 +62,10 @@ public final class ClassOrInterfaceType extends Type {
     }
     
     @Override
-    public symboltable.Type castType(int line)
+    public symboltable.Type castType()
     {
     	ClassSymbol t = new ClassSymbol(name);
-    	t.setDefinedLine(line);
+    	t.setDefinedLine(this.getBeginLine());
     	return t;
     }
 

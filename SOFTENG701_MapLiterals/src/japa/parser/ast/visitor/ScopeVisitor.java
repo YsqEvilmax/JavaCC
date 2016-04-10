@@ -105,7 +105,7 @@ import symboltable.Symbol;
 import symboltable.Type;
 import symboltable.VariableSymbol;
 
-public class ScopeVisitor implements VoidVisitor<Object> {
+public class ScopeVisitor extends TravelVisitor {
 
 	private Scope currentScope;
 
@@ -116,6 +116,21 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		}
 	}
 
+	static public void checkScope(String name, Node n){
+		Scope scope = n.getEnclosingScope();
+		if(scope == null){
+			throw new A2SemanticsException("Node " + n.toString()
+			+ " havs no scope on line " + n.getBeginLine() + "!");
+		}
+		Symbol target = scope.resolve(name);
+		if (target == null) {
+			throw new A2SemanticsException("Name " + name
+					+ " cannot be successfully resloved in current scope: "
+					+ scope.getScopeName()
+					+ " on line " + n.getBeginLine() + "!");
+		}
+	}
+	
 	@Override
 	public void visit(Node n, Object arg) {
 		throw new IllegalStateException(n.getClass().getName());
@@ -166,16 +181,19 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 				c.accept(this, arg);
 			}
 		}
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
 	public void visit(LineComment n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
 	public void visit(BlockComment n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -190,7 +208,6 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		symbol.setDefinedLine(n.getBeginLine());	
 		symbol.setEnclosingScope(currentScope);
 
-		currentScope.define(symbol);
 		currentScope = symbol;
 		n.setEnclosingScope(currentScope);
 
@@ -208,7 +225,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		EnumSymbol enumSymbol = new EnumSymbol(n.getName());
 		enumSymbol.setEnclosingScope(currentScope);
 
-		currentScope.define(enumSymbol);
+		
 		currentScope = enumSymbol;
 		n.setEnclosingScope(currentScope);
 
@@ -245,7 +262,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(EnumConstantDeclaration n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("enum");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -291,7 +308,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		for (Iterator<VariableDeclarator> i = n.getVariables().iterator(); i
 				.hasNext();) {
 			VariableDeclarator var = i.next();
-			var.accept(this, arg);
+			var.accept(this, n.getType().castType());
 		}
 	}
 
@@ -306,69 +323,61 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(VariableDeclaratorId n, Object arg) {
-		n.setEnclosingScope(currentScope);
-		if(arg instanceof japa.parser.ast.type.Type)
-		{
-			japa.parser.ast.type.Type t = (japa.parser.ast.type.Type)arg;
-			Type realType = t.castType(n.getBeginLine());
-			Symbol s = new VariableSymbol(n.getName(), realType);
-			s.setDefinedLine(n.getBeginLine());
-		    currentScope.define(s);	
-		}
+		n.setEnclosingScope(currentScope);	
 	}
 
 	@Override
 	public void visit(ConstructorDeclaration n, Object arg) {
 		MethodSymbol methodSymbol = new MethodSymbol(n.getName());
+		methodSymbol.setDefinedLine(n.getBeginLine());
 		methodSymbol.setEnclosingScope(currentScope);
-
-		Symbol returnSymbol = currentScope.resolve(n.getName());
-		
-		if(returnSymbol == null)
-		{
-			throw new A2SemanticsException("Require a valid return type of method/constructor "
-					+ n.getName() + "!");
-		}
-		
-		if (returnSymbol instanceof Type) {
-			Type returnType = (Type) returnSymbol;
-			methodSymbol.setType(returnType);
-		} else {
-			throw new A2SemanticsException("Return type of method/constructor "
-					+ n.getName() + " is not a Type! (is "
-					+ returnSymbol.getName() + ")");
-		}
 
 		currentScope = methodSymbol;
 		n.setEnclosingScope(currentScope);
+	
+		List<Type> parameters = new ArrayList<Type>();
+
+		if (n.getParameters() != null) {
+			for (Iterator<Parameter> i = n.getParameters().iterator(); i
+					.hasNext();) {
+				Parameter p = i.next();		
+				parameters.add(currentScope.resolveType(p.getType().toString()));
+				p.accept(this, arg);
+			}
+		}
+
+		methodSymbol.setParameters(parameters);
+
+		if (n.getThrows() != null) {
+			for (Iterator<NameExpr> i = n.getThrows().iterator(); i.hasNext();) {
+				NameExpr name = i.next();
+				name.accept(this, arg);
+			}
+		}
 
 		n.getBlock().accept(this, arg);
 
-		currentScope = currentScope.getEnclosingScope();
+		currentScope = currentScope.getEnclosingScope();		
 	}
 
 	@Override
 	public void visit(MethodDeclaration n, Object arg) {
 		MethodSymbol methodSymbol = new MethodSymbol(n.getName());
+		methodSymbol.setDefinedLine(n.getBeginLine());
 		methodSymbol.setEnclosingScope(currentScope);
+
 
 		currentScope = methodSymbol;
 		n.setEnclosingScope(currentScope);
-
-		Type returnType = currentScope.resolveType(n.getType().toString());
-
-		methodSymbol.setType(returnType);
-
-		currentScope.getEnclosingScope().define(methodSymbol);
 
 		List<Type> parameters = new ArrayList<Type>();
 
 		if (n.getParameters() != null) {
 			for (Iterator<Parameter> i = n.getParameters().iterator(); i
 					.hasNext();) {
-				Parameter p = i.next();
-				p.accept(this, arg);
+				Parameter p = i.next();		
 				parameters.add(currentScope.resolveType(p.getType().toString()));
+				p.accept(this, arg);
 			}
 		}
 
@@ -393,7 +402,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		n.setEnclosingScope(currentScope);
 
 		n.getType().accept(this, arg);
-		n.getId().accept(this, arg);
+		n.getId().accept(this, n.getType().castType());
 	}
 
 	@Override
@@ -403,13 +412,15 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(InitializerDeclaration n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("initializer");
 		localScope.setEnclosingScope(currentScope);
 		
 		currentScope = localScope;
 		n.setEnclosingScope(currentScope);
 
-		n.getBlock().accept(this, arg);
+		if (n.getBlock() != null) {
+			n.getBlock().accept(this, arg);
+		}
 
 		currentScope = currentScope.getEnclosingScope();
 	}
@@ -610,7 +621,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(NameExpr n, Object arg) {
-		n.setEnclosingScope(currentScope);
+		n.setEnclosingScope(currentScope);	
 	}
 
 	@Override
@@ -675,7 +686,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 		for (Iterator<VariableDeclarator> i = n.getVars().iterator(); i
 				.hasNext();) {
 			VariableDeclarator v = i.next();	
-			v.accept(this, n.getType());
+			v.accept(this, n.getType().castType());
 		}
 	}
 
@@ -733,10 +744,11 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(BlockStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		if(!(currentScope instanceof ScopedSymbol)){
+			LocalScope localScope = new LocalScope("block");
+			localScope.setEnclosingScope(currentScope);
+			currentScope = localScope;
+		}
 		n.setEnclosingScope(currentScope);
 
 		if (n.getStmts() != null) {
@@ -745,7 +757,9 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 			}
 		}
 
-		currentScope = currentScope.getEnclosingScope();
+		if(!(currentScope instanceof ScopedSymbol)){
+			currentScope = currentScope.getEnclosingScope();
+		}		
 	}
 
 	@Override
@@ -767,7 +781,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(SwitchStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("switch");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -812,7 +826,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(IfStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("if");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -829,7 +843,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(WhileStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("while");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -848,7 +862,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(DoStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("do");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -862,7 +876,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(ForeachStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("foreach");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -877,7 +891,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(ForStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("for");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -918,7 +932,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(TryStmt n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("try");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -939,7 +953,7 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(CatchClause n, Object arg) {
-		LocalScope localScope = new LocalScope();
+		LocalScope localScope = new LocalScope("catch");
 		localScope.setEnclosingScope(currentScope);
 
 		currentScope = localScope;
@@ -953,9 +967,6 @@ public class ScopeVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(MapInitializationExpr n, Object arg) {
-		n.setEnclosingScope(currentScope);
-		if (n.getScope() != null) {
-			n.getScope().accept(this, arg);
-		}	
+		super.visit(n, arg);
 	}
 }

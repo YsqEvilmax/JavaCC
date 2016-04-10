@@ -17,7 +17,7 @@ public abstract class ScopedSymbol extends Symbol implements Scope {
 
 	@Override
 	public String getScopeName() {
-		return name;
+		return "Scope: " + name;
 	}
 
 	@Override
@@ -34,8 +34,12 @@ public abstract class ScopedSymbol extends Symbol implements Scope {
 	public void define(Symbol symbol) {
 		String name = symbol.getName();
 		if (symbols.get(name) != null) {
-			throw new A2SemanticsException("The symbol " + name
-					+ " has been already defined in scope " + getScopeName());
+			throw new A2SemanticsException("Error occurs on line "
+					+ symbol.getDefinedLine() + " : "
+					+ "the symbol " + name 
+					+ " on line " + symbol.getDefinedLine() 
+		 + " has been already defined in scope " + this.getScopeName()
+		 + " on line " + symbols.get(name).getDefinedLine() +"!");
 		}
 		symbols.put(name, symbol);
 	}
@@ -70,6 +74,31 @@ public abstract class ScopedSymbol extends Symbol implements Scope {
 			return enclosingScope.resolveType(name);
 
 		// otherwise it doesn't exist
+		return null;
+	}
+	
+	@Override
+	public boolean isLocal(Symbol s){
+		return symbols.containsValue(s);
+	}
+	
+	@Override
+	public boolean isLocal(String s){
+		return symbols.containsKey(s);
+	}
+	
+	@Override
+	public ScopedSymbol find(){
+		
+		for(Symbol s : symbols.values()){
+			if (s instanceof Type) {
+				return (ScopedSymbol) s;
+			}
+		}
+
+		if (enclosingScope != null)
+			return enclosingScope.find();
+		
 		return null;
 	}
 

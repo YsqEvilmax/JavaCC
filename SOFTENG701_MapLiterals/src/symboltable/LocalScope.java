@@ -2,13 +2,15 @@ package symboltable;
 
 
 public class LocalScope extends BaseScope {
+	private String name;
 
-	public LocalScope() {
+	public LocalScope(String name) {
 		super();
+		this.name = name;
 	}
 
 	@Override
 	public String getScopeName() {
-		return "Local Scope";
+		return "Scope: " + name;
 	}
 }

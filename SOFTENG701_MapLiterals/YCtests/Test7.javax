@@ -2,6 +2,6 @@
 
 public class Test1 {
 	// ERROR: cannot assign String to int
-	int a = ""; // visit(FieldDeclaration
+	int a = "  "; // visit(FieldDeclaration
 
 }

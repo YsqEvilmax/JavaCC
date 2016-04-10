@@ -1,0 +1,24 @@
+package se701;
+
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class StudentSample {
+
+	public static void main(String[] args){ 
+		sampleMethod(); 
+	} 
+
+ 	public static void sampleMethod() {
+ 	
+		StudentSample states1 = new HashMap {
+		    "AL" : "Alabama",
+		    "AK" : "Alaska",
+		    "AZ" : "Arizona", 
+		    "WY" : "Wyoming"
+		};
+	}
+
+}

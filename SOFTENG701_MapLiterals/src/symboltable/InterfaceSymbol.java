@@ -1,5 +1,6 @@
 package symboltable;
 
+import japa.parser.ast.type.ClassOrInterfaceType;
 
 public class InterfaceSymbol extends ScopedSymbol implements Type {
 
@@ -58,4 +59,31 @@ public class InterfaceSymbol extends ScopedSymbol implements Type {
 		return null;
 	}
 
+	@Override
+	public japa.parser.ast.type.Type castType() {
+//		if(this.name == "boolean"){
+//			this.name = "Boolean";
+//		}else if(this.name == "char"){
+//			this.name = "Char";
+//		}else if(this.name == "byte"){
+//			this.name = "Byte";
+//		}
+//		else if(this.name == "short"){
+//			this.name = "Short";
+//		}
+//		else if(this.name == "int"){
+//			this.name = "Integer";
+//		}
+//		else if(this.name == "long"){
+//			this.name = "Long";
+//		}
+//		else if(this.name == "float"){
+//			this.name = "Float";
+//		}
+//		else if(this.name == "double"){
+//			this.name = "Double";
+//		}
+		ClassOrInterfaceType t = new ClassOrInterfaceType(this.getDefinedLine(), this.getDefinedLine(), null, name, null);
+		return t;
+	}
 }

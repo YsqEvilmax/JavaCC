@@ -12,10 +12,10 @@ public final class MapInitializationExpr extends Expression {
 	private final Expression scope;
 	private final ClassOrInterfaceType type;
 	private final List<Type> typeArgs;
-	private final List<LiteralExpr> keys;
-	private final List<LiteralExpr> values;
+	private final List<Expression> keys;
+	private final List<Expression> values;
 
-	public MapInitializationExpr(int line, int column, Expression scope, ClassOrInterfaceType type, List<Type> typeArgs, List<LiteralExpr> keys, List<LiteralExpr> values) {
+	public MapInitializationExpr(int line, int column, Expression scope, ClassOrInterfaceType type, List<Type> typeArgs, List<Expression> keys, List<Expression> values) {
 		super(line, column);
 		this.scope = scope;
 		this.type = type;
@@ -44,12 +44,12 @@ public final class MapInitializationExpr extends Expression {
 		typeArgs.add(valueT);
 	}
 	
-	public List<LiteralExpr> getKeys()
+	public List<Expression> getKeys()
 	{
 		return keys;
 	}
 	
-	public List<LiteralExpr> getValues()
+	public List<Expression> getValues()
 	{
 		return values;
 	}

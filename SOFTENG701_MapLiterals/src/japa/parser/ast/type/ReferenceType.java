@@ -58,9 +58,9 @@ public final class ReferenceType extends Type {
     }
 
 	@Override
-	public symboltable.Type castType(int line) {
+	public symboltable.Type castType() {
 		// TODO Auto-generated method stub
-		return type.castType(line);
+		return type.castType();
 	}
 
 }

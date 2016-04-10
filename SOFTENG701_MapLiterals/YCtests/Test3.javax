@@ -17,9 +17,9 @@ public class Test3 {
 		public void fire() {
 			if (ammo > 0) {
 				ammo--;
-				System.out.println("Weapon fired");
+				//System.out.println("Weapon fired");
 			} else {
-				System.out.println("Ammo out");
+				//System.out.println("Ammo out");
 			}
 		}
 	}

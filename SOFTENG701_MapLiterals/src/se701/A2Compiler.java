@@ -9,11 +9,15 @@ import japa.parser.JavaParser;
 import japa.parser.ParseException;
 import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.visitor.SillyBreakVisitor;
-import japa.parser.ast.visitor.TypeVisitor;
-import japa.parser.ast.visitor.VariableVisitor;
-import japa.parser.ast.visitor.ClassVisitor;
+import japa.parser.ast.visitor.TypeCheckVisitor;
+import japa.parser.ast.visitor.VariableCheckVisitor;
+import japa.parser.ast.visitor.VariableCollectVisitor;
+import japa.parser.ast.visitor.ClassCheckVisitor;
+import japa.parser.ast.visitor.ClassCollectVisitor;
 import japa.parser.ast.visitor.DumpVisitor;
-import japa.parser.ast.visitor.MethodVisitor;
+import japa.parser.ast.visitor.MapCheckVisitor;
+import japa.parser.ast.visitor.MethodCheckVisitor;
+import japa.parser.ast.visitor.MethodCollectVisitor;
 import japa.parser.ast.visitor.ScopeVisitor;
 
 public class A2Compiler {
@@ -36,24 +40,45 @@ public class A2Compiler {
 		ScopeVisitor scopes = new ScopeVisitor();
 		ast.accept(scopes, null);
 
-		// check types
-		TypeVisitor types = new TypeVisitor();
-		ast.accept(types, null);
+//		// Check that all classes have been accessed only after their
+//		// creation, and that any assignments are of the correct type.
+//		ClassVisitor classes = new ClassVisitor();
+//		ast.accept(classes, null);
+//
+//		// Check that all method calls are to methods that exist, and pass in
+//		// the correct type for each parameter.
+//		MethodVisitor methods = new MethodVisitor();
+//		ast.accept(methods, null);
+//		
+//		// check variables
+//		VariableVisitor variables = new VariableVisitor();
+//		ast.accept(variables, null);
+//		
+//		// check types
+//		TypeVisitor types = new TypeVisitor();
+//		ast.accept(types, null);
+		
+		ClassCollectVisitor ccv = new ClassCollectVisitor();
+		ast.accept(ccv, null);
+		
+		MethodCollectVisitor mcv = new MethodCollectVisitor();
+		ast.accept(mcv, null);
+		
+		VariableCollectVisitor vcv = new VariableCollectVisitor();
+		ast.accept(vcv, null);
+			
+		VariableCheckVisitor vckv = new VariableCheckVisitor();
+		ast.accept(vckv, null);
+		
+		MethodCheckVisitor mckv = new MethodCheckVisitor();
+		ast.accept(mckv, null);
+		
+		ClassCheckVisitor cckv = new ClassCheckVisitor();
+		ast.accept(cckv, null);
+		
+		MapCheckVisitor mapckv = new MapCheckVisitor();
+		ast.accept(mapckv, null);
 
-		// check variables
-		VariableVisitor variables = new VariableVisitor();
-		ast.accept(variables, null);
-
-		// Check that all classes have been accessed only after their
-		// creation, and that any assignments are of the correct type.
-		ClassVisitor classes = new ClassVisitor();
-		ast.accept(classes, null);
-
-
-		// Check that all method calls are to methods that exist, and pass in
-		// the correct type for each parameter.
-		MethodVisitor methods = new MethodVisitor();
-		ast.accept(methods, null);
 		
 		// perform visit N 
 		DumpVisitor printVisitor = new DumpVisitor();
@@ -73,6 +98,7 @@ public class A2Compiler {
 		String javaxFileName = javaxFile.getName();
 		File containingDirectory = javaxFile.getAbsoluteFile().getParentFile();
 		String path = containingDirectory.getAbsolutePath()+System.getProperty("file.separator");
+//		String path = "src" + System.getProperty("file.separator") + "se701" + System.getProperty("file.separator");
 		String javaFilePath = path + javaxFileName.substring(0,javaxFileName.lastIndexOf("."))+".java";
 		return new File(javaFilePath);
 	}

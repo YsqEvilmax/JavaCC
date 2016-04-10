@@ -33,7 +33,9 @@ public abstract class BaseScope implements Scope {
 	public void define(Symbol symbol) {
 		String name = symbol.getName();
 		if (this.resolve(name) != null) {
-			throw new A2SemanticsException("The symbol " + name + " (on line "
+			throw new A2SemanticsException("Error occurs on line "
+					+ symbol.getDefinedLine() 
+					+ " : the symbol " + name + " (on line "
 					+ symbol.getDefinedLine() + ")" + " has already been defined in scope " 
 					+ getScopeName() + "(on line "
 					+ this.resolve(name).getDefinedLine() + ")" + "!");
@@ -74,7 +76,32 @@ public abstract class BaseScope implements Scope {
 		// otherwise it doesn't exist
 		return null;
 	}
+	
+	@Override
+	public boolean isLocal(Symbol s){
+		return symbols.containsValue(s);
+	}
+	
+	@Override
+	public boolean isLocal(String s){
+		return symbols.containsKey(s);
+	}
 
+	@Override
+	public ScopedSymbol find(){
+		
+		for(Symbol s : symbols.values()){
+			if (s instanceof ClassSymbol) {
+				return (ScopedSymbol) s;
+			}
+		}
+
+		if (enclosingScope != null)
+			return enclosingScope.find();
+		
+		return null;
+	}
+	
 	@Override
 	public List<Symbol> getAllSymbols() {
 		List<Symbol> allSymbols = new ArrayList<Symbol>();

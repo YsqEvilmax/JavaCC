@@ -21,6 +21,8 @@ public class GlobalScope extends BaseScope {
 
 		define(new VariableSymbol("true", resolveType("boolean")));
 		define(new VariableSymbol("false", resolveType("boolean")));
+		
+		define(new BuiltInTypeSymbol("se701"));
 	}
 	
 	@Override
