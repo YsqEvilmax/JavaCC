@@ -128,18 +128,18 @@ public final class DumpVisitor implements VoidVisitor<Object> {
         return printer.getSource();
     }
 
-    private boolean isMapSimplized(Type type){
+    private ClassOrInterfaceType isMapSimplized(Type type){
     	if(type instanceof ReferenceType && ((ReferenceType) type).getType() instanceof ClassOrInterfaceType)
     	{
     		ClassOrInterfaceType mapType = (ClassOrInterfaceType)((ReferenceType)type).getType();
 	        if(mapType.getName().equals("Map")
 	        || mapType.getName().equals("HashMap"))
 	        {
-	    		if(mapType.getTypeArgs() == null)
-	    			return true;
+	    		//if(mapType.getTypeArgs() == null)
+	    			return mapType;
 	        }
     	}
-    	return false;
+    	return null;
     }
     
     private void printModifiers(int modifiers) {
@@ -440,18 +440,11 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     }
 
     public void visit(VariableDeclarator n, Object arg) {
-    	Type t = (Type) arg;
-    	if(!isMapSimplized(t))
-    	{
-    		n.getId().accept(this, arg);
-    	}
+    	n.getId().accept(this, arg);
         
         if (n.getInit() != null) {
-        	if(!isMapSimplized(t))
-        	{
-                printer.print(" = ");
-        	}
-            n.getInit().accept(this, n.getId());
+        	printer.print(" = ");
+            n.getInit().accept(this, n.getId().getName());
         }
     }
 
@@ -554,6 +547,9 @@ public final class DumpVisitor implements VoidVisitor<Object> {
                 break;
         }
         printer.print(" ");
+        if(n.getTarget() instanceof NameExpr){
+        	arg = ((NameExpr)n.getTarget()).getName();
+        }
         n.getValue().accept(this, arg);
     }
 
@@ -937,25 +933,23 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     public void visit(VariableDeclarationExpr n, Object arg) {
         printAnnotations(n.getAnnotations(), arg);
         printModifiers(n.getModifiers());
-
-        if(!isMapSimplized(n.getType()))
-        {
-            n.getType().accept(this, arg);
-            printer.print(" ");
-        }
+        
+        n.getType().accept(this, arg);
+        printer.print(" ");
 
         for (Iterator<VariableDeclarator> i = n.getVars().iterator(); i.hasNext();) {
             VariableDeclarator v = i.next();
-            v.accept(this, n.getType());
+            v.accept(this, arg);
             if (i.hasNext()) {
-            	if(!isMapSimplized(n.getType())){
+            	if(!(isMapSimplized(n.getType()) instanceof ClassOrInterfaceType)){
             		printer.print(", ");
-            	}          
+            	}   
+            	else{
+            		printer.printLn(";");
+            		printer.print(isMapSimplized(n.getType()).getName() + " ");
+            	}
             }
         }
-        if(!isMapSimplized(n.getType())){
-    		printer.printLn(";");
-    	}
     }
 
     public void visit(TypeDeclarationStmt n, Object arg) {
@@ -998,9 +992,7 @@ public final class DumpVisitor implements VoidVisitor<Object> {
 
     public void visit(ExpressionStmt n, Object arg) {
         n.getExpression().accept(this, arg);
-        if(!(n.getExpression() instanceof VariableDeclarationExpr)){
-        	printer.print(";");
-        }    
+        printer.print(";");  
     }
 
     public void visit(SwitchStmt n, Object arg) {
@@ -1334,19 +1326,20 @@ public final class DumpVisitor implements VoidVisitor<Object> {
     }
     
     public void visit(MapInitializationExpr n, Object arg){
-    	VariableDeclaratorId id = (VariableDeclaratorId)arg; 
-    	printer.print("Map");
-    	printTypeArgs(n.getTypeArgs(), arg); 
-    	printer.print(" ");
-    	visit(id, arg);    	
-    	printer.print(" = new ");
-    	
-    	visit(n.getType(), arg);
-    	printTypeArgs(n.getTypeArgs(), arg); 
-    	printer.printLn("();");
-    	for(int i = 0; i < n.getKeys().size(); i++)
-    	{
-    		printer.printLn(id.getName()+".put(" + n.getKeys().get(i) + ", " + n.getValues().get(i) + ");");		
-    	}  
+    	if(arg instanceof String){
+        	String name = (String)arg;  	
+        	printer.print(" new ");
+        	
+        	visit(n.getType(), arg);
+        	printTypeArgs(n.getTypeArgs(), arg); 
+        	printer.printLn("();");
+        	for(int i = 0; i < n.getKeys().size(); i++)
+        	{
+        		printer.print(name+".put(" + n.getKeys().get(i) + ", " + n.getValues().get(i) + ")");		
+        		if(i < n.getKeys().size() - 1){
+        			printer.printLn(";");
+        		}
+        	}  
+    	}
     } 
 }

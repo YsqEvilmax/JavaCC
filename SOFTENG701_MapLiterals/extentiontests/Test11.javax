@@ -12,30 +12,13 @@ public class StudentSample {
 	} 
 
  	public static void sampleMethod() {
-		Map states1 = new HashMap {
+ 	
+		StudentSample states1 = new HashMap {
 		    "AL" : "Alabama",
 		    "AK" : "Alaska",
 		    "AZ" : "Arizona", 
 		    "WY" : "Wyoming"
-		},
-		
-		states2 = new HashMap {
-		    1 : "Alabama",
-		    2 : "Alaska",
-		    3 : "Arizona", 
-		    4 : "Wyoming"
-		},
-		
-		states3 = new HashMap {
-		    "AL" : "Alabama",
-		    "AK" : "Alaska",
-		    "AZ" : "Arizona", 
-		    "WY" : "Wyoming"
-		}; 
-		
-		
-		int a =1, b=2, c=3;
-		float x,y,z;
+		};
 	}
 
 }

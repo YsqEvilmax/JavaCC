@@ -12,17 +12,15 @@ public class StudentSample {
 
     public static void sampleMethod() {
         StudentSample s1 = new StudentSample(), s2 = new StudentSample();
-
-        Map<String, String> states1 = new HashMap<String, String>();
+        HashMap states1 =  new HashMap<String, String>();
         states1.put("AL", "Alabama");
         states1.put("AK", "Alaska");
         states1.put("AZ", "Arizona");
         states1.put("WY", "Wyoming");
-        Map<Integer, String> states2 = new HashMap<Integer, String>();
+        HashMap states2 =  new HashMap<Integer, String>();
         states2.put(1, "Alabama");
         states2.put(2, "Alaska");
         states2.put(3, "Arizona");
         states2.put(4, "Wyoming");
-
     }
 }

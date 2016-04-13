@@ -60,20 +60,24 @@ public class MethodCheckVisitor extends TypeCheckVisitor {
 		currentScope = n.getEnclosingScope();
 		if(n.getStmts() != null){
 			for(Statement t : n.getStmts()){
-				if(!(t instanceof ReturnStmt)){
-					arg = null;
+				Object method = null;
+				if(t instanceof ReturnStmt){
+					
+					method = arg;				
 				}
-				travel(t, arg);
+				travel(t, method);
 			}
 		}
-		currentScope = currentScope.getEnclosingScope();
+		if(currentScope.getScopeName().equals("block")){
+			currentScope = currentScope.getEnclosingScope();
+		}		
 	}
 	
 	@Override
 	public void visit(MethodDeclaration n, Object arg) {
 		currentScope = n.getEnclosingScope();	
 		MethodSymbol methodSymbol = (MethodSymbol)currentScope.resolve(n.getName());
-		Type returnType = currentScope.resolveType(n.getType().toString());
+		Type returnType = currentScope.resolveType(n.getType().castType().getName());
 		loadReturn(methodSymbol, returnType);
 		if (methodSymbol.getType().getName() == "void") {		
 			methodSymbol.setHasReturn(true);//return is not necessary for void

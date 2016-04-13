@@ -2,11 +2,15 @@ package japa.parser.ast.visitor;
 
 import japa.parser.ast.body.ConstructorDeclaration;
 import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.stmt.BlockStmt;
+import symboltable.LocalScope;
+import symboltable.MethodSymbol;
+import symboltable.Scope;
 import symboltable.ScopedSymbol;
 
-public class MethodCollectVisitor extends TravelVisitor {
+public class MethodDefineVisitor extends TravelVisitor {
 
-	public MethodCollectVisitor() {
+	public MethodDefineVisitor() {
 		super();
 	}
 

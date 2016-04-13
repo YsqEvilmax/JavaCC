@@ -2,6 +2,7 @@ package japa.parser.ast.visitor;
 
 import japa.parser.ast.Node;
 import japa.parser.ast.expr.AssignExpr;
+import japa.parser.ast.expr.BinaryExpr;
 import japa.parser.ast.expr.BooleanLiteralExpr;
 import japa.parser.ast.expr.CharLiteralExpr;
 import japa.parser.ast.expr.DoubleLiteralExpr;
@@ -24,7 +25,40 @@ import symboltable.Symbol;
 import symboltable.Type;
 import symboltable.VariableSymbol;
 
-public class TypeCheckVisitor extends TravelVisitor {
+public abstract class TypeCheckVisitor extends TravelVisitor {
+	
+	protected void checkExistance(Symbol resloved, String name, Node n){
+		if (resloved == null) {
+			throw new A2SemanticsException("Error occurs on line "
+					+ n.getBeginLine() + " : "
+					+ "name " + name
+					+ " on line " + n.getBeginLine()
+					+ " cannot be successfully resloved in current scope: "
+					+ this.currentScope.getScopeName() + "!");
+		}
+	}
+	
+	protected void checkExistance(String name, Node n){
+		if(this.currentScope != null){
+			Symbol resolved = this.currentScope.resolve(name);
+			checkExistance(resolved, name, n);
+		}
+	}
+	
+	protected void checkBeforeDeclaraion(String name, Node n){
+		if(this.currentScope != null){
+			Symbol target = this.currentScope.resolve(name);
+			if (target != null) {
+				if(this.currentScope.isLocal(target) && target.getDefinedLine() > n.getBeginLine())
+				throw new A2SemanticsException("Error occurs on line " 
+						+ n.getBeginLine() + " :"
+						+ " name " + name
+						+ " on line " + n.getBeginLine()
+						+ " is used before its declaration on line "
+						+ target.getDefinedLine() + "!");
+			}
+		}
+	}
 	
 	protected void checkType(Type target, Type resolved, Node n){
 		String t = target.getName();
@@ -65,7 +99,10 @@ public class TypeCheckVisitor extends TravelVisitor {
 	
 	protected void argHandle(MethodCallExpr n, Object arg){
 		if(arg instanceof Symbol){
-			checkType((Symbol)arg, currentScope.resolve(n.getName()), n);
+			MethodSymbol resolved = (MethodSymbol)currentScope.resolve(n.getName());
+			if(resolved.getType() != null){
+						checkType((Type)arg, resolved.getType(), n);
+			}		
 		}
 	}
 	
@@ -101,6 +138,19 @@ public class TypeCheckVisitor extends TravelVisitor {
 			}
 		}
 		this.travel(n.getValue(), arg);
+	}
+	
+	@Override
+	public void visit(BinaryExpr n, Object arg) {
+		currentScope = n.getEnclosingScope();
+		this.travel(n.getLeft(), arg);
+		if(n.getLeft() instanceof NameExpr){
+			arg = currentScope.resolve(((NameExpr)n.getLeft()).getName());
+			if(((Symbol)arg)!=null){
+				arg = ((Symbol)arg).getType();
+			}
+		}
+		this.travel(n.getRight(), arg);
 	}
 	
 	@Override

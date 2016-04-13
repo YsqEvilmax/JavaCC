@@ -11,11 +11,10 @@ public class StudentSample {
     }
 
     public static void sampleMethod() {
-        Map<String, String> states = new HashMap<String, String>();
+        Map states =  new HashMap<String, String>();
         states.put("AL", "Alabama");
         states.put("AK", "Alaska");
         states.put("AZ", "Arizona");
         states.put("WY", "Wyoming");
-
     }
 }

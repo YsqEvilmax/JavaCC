@@ -6,9 +6,9 @@ import symboltable.Symbol;
 import symboltable.Type;
 import symboltable.VariableSymbol;
 
-public class VariableCollectVisitor extends TravelVisitor {
+public class VariableDefineVisitor extends TravelVisitor {
 
-	public VariableCollectVisitor() {
+	public VariableDefineVisitor() {
 		super();
 	}
 

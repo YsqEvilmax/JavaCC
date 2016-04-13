@@ -2336,14 +2336,16 @@ Expression AllocationExpression(Expression scope):
 	    |
 	      args = Arguments() [ LOOKAHEAD(2) anonymousBody = ClassOrInterfaceBody(false) ]
 	      { ret = new ObjectCreationExpr(line, column, scope, (ClassOrInterfaceType) type, typeArgs, args, anonymousBody); }
-		//Shawn 17:14
+
+		//syu702 17:14
 	    |
 	      "{"(key = MapItem()":"value = MapItem()) {	keys.add(key); values.add(value); }
 	      (","key = MapItem(){keys.add(key);}":"value = MapItem(){values.add(value);})* "}"	      {
 	          ret = new MapInitializationExpr(line, column,  scope,
 	          (ClassOrInterfaceType)type, typeArgs==null?new LinkedList():typeArgs,
 	           keys, values);	          	        	      }
-	    //Shawn 17:14
+	    //syu702 17:14
+	    
 	    )
   )
   { return ret; }

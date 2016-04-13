@@ -1,21 +1,41 @@
 package symboltable;
 
+import java.util.List;
+
 import japa.parser.ast.type.ClassOrInterfaceType;
 
 public class InterfaceSymbol extends ScopedSymbol implements Type {
 
-	private InterfaceSymbol superinterface;
+	private List<Type> parameters;
+	private List<InterfaceSymbol> superinterfaces;
 
 	public InterfaceSymbol(String name) {
 		super(name, null);
 	}
-
-	public InterfaceSymbol getSuperclass() {
-		return superinterface;
+	
+	public void setParameterTypes(List<Type> parameters) {
+		this.parameters = parameters;
+	}
+	
+	public List<Type> getParameterTypes() {
+		return this.parameters;
 	}
 
-	public void setSuperinterface(InterfaceSymbol superinterface) {
-		this.superinterface = superinterface;
+	public List<InterfaceSymbol> getSuperinterfaces() {
+		return superinterfaces;
+	}
+
+	public void setSuperinterfaces(List<InterfaceSymbol> superinterfaces) {
+		this.superinterfaces = superinterfaces;
+	}
+	
+	@Override
+	public boolean isLocal(String s){
+		boolean x = super.isLocal(s);
+		for(InterfaceSymbol cs : superinterfaces){
+			x = (x || cs.isLocal(s));
+		}
+		return x;
 	}
 
 	@Override
@@ -24,14 +44,19 @@ public class InterfaceSymbol extends ScopedSymbol implements Type {
 		Symbol s = symbols.get(name);
 		if (s != null)
 			return s;
+		
+		// otherwise look in the superclass, if there is one
+		if (superinterfaces != null){
+			for(InterfaceSymbol interfacesymbol : superinterfaces){
+				InterfaceSymbol x = (InterfaceSymbol) interfacesymbol.resolve(name);
+				if(x != null)
+					return x;
+			}
+		}			
 
 		// otherwise look in the enclosing scope, if there is one
 		if (enclosingScope != null)
 			return enclosingScope.resolve(name);
-
-		// otherwise look in the superclass, if there is one
-		if (superinterface != null)
-			return superinterface.resolve(name);
 
 		// otherwise it doesn't exist
 		return null;
@@ -46,14 +71,19 @@ public class InterfaceSymbol extends ScopedSymbol implements Type {
 				return (Type) s;
 			}
 		}
+		
+		// otherwise look in the superclass, if there is one
+		if (superinterfaces != null){
+			for(InterfaceSymbol interfacesymbol : superinterfaces){
+				InterfaceSymbol x = (InterfaceSymbol) interfacesymbol.resolve(name);
+				if(x != null)
+					return x;
+			}
+		}
 
 		// otherwise look in the enclosing scope, if there is one
 		if (enclosingScope != null)
 			return enclosingScope.resolveType(name);
-
-		// otherwise look in the superclass, if there is one
-		if (superinterface != null)
-			return superinterface.resolveType(name);
 
 		// otherwise it doesn't exist
 		return null;

@@ -17,20 +17,19 @@ public class StudentSample {
     }
 
     public static void sampleMethod() {
-        Map<String, String> states1 = new HashMap<String, String>();
+        Map states1 =  new HashMap<String, String>();
         states1.put("AL", "Alabama");
         states1.put("AK", "Alaska");
         states1.put("AZ", "Arizona");
         states1.put("WY", "Wyoming");
-        Map<Integer, String> states2 = new HashMap<Integer, String>();
+        Map states2 =  new HashMap<Integer, String>();
         states2.put(1, "Alabama");
         states2.put(2, "Alaska");
         states2.put(3, "Arizona");
         states2.put(4, "Wyoming");
-        Map<StudentSample, String> states3 = new HashMap<StudentSample, String>();
+        Map states3 =  new HashMap<StudentSample, String>();
         states3.put(s1, "Alabama");
         states3.put(s2, "Alaska");
         states3.put(s3, "Arizona");
-
     }
 }

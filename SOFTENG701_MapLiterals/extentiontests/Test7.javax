@@ -8,17 +8,22 @@ import java.util.Map.Entry;
 public class StudentSample {
 
 	public static void main(String[] args){ 
-		sampleMethod(); 
+		Test t = new Test();
 	} 
 
- 	public static void sampleMethod() {
- 	
-		StudentSample states1 = new HashMap {
+ 	class Test{
+ 	public 	Map states1 = new HashMap {
 		    "AL" : "Alabama",
 		    "AK" : "Alaska",
 		    "AZ" : "Arizona", 
 		    "WY" : "Wyoming"
-		};
-	}
+		}; 
+		
+		public Test(){
+		
+		
+		}
+ 	
+ 	}
 
 }

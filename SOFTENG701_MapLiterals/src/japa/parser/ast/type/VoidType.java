@@ -46,7 +46,7 @@ public final class VoidType extends Type {
 
 	@Override
 	public symboltable.Type castType() {
-		BuiltInTypeSymbol t = new BuiltInTypeSymbol("null");
+		BuiltInTypeSymbol t = new BuiltInTypeSymbol("void");
 		t.setDefinedLine(this.getBeginLine());
 		return t;
 	}

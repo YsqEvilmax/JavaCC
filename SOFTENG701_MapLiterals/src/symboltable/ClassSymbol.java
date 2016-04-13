@@ -7,11 +7,20 @@ import japa.parser.ast.type.PrimitiveType;
 
 public class ClassSymbol extends ScopedSymbol implements Type {
 
+	private List<Type> parameters;
 	private List<InterfaceSymbol> interfaces;
-	private ClassSymbol superclass;
+	private List<ClassSymbol> superclasses;
 
 	public ClassSymbol(String name) {
 		super(name, null);
+	}
+	
+	public void setParameterTypes(List<Type> parameters) {
+		this.parameters = parameters;
+	}
+	
+	public List<Type> getParameterTypes() {
+		return this.parameters;
 	}
 
 	public List<InterfaceSymbol> getInterfaces() {
@@ -22,12 +31,21 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 		this.interfaces = interfaces;
 	}
 
-	public ClassSymbol getSuperclass() {
-		return superclass;
+	public List<ClassSymbol> getSuperclasses() {
+		return superclasses;
 	}
 
-	public void setSuperclass(ClassSymbol superclass) {
-		this.superclass = superclass;
+	public void setSuperclasses(List<ClassSymbol> superclasses) {
+		this.superclasses = superclasses;
+	}
+	
+	@Override
+	public boolean isLocal(String s){
+		boolean x = super.isLocal(s);
+		for(ClassSymbol cs : superclasses){
+			x = (x || cs.isLocal(s));
+		}
+		return x;
 	}
 
 	@Override
@@ -38,9 +56,15 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 			return s;
 
 		// otherwise look in the superclass, if there is one
-		if (superclass != null)
-			return superclass.resolve(name);
-
+		if (superclasses != null)
+		{
+			for(ClassSymbol superclass : superclasses){
+				ClassSymbol x = (ClassSymbol) superclass.resolve(name);
+				if(x != null)
+					return x;
+			}
+		}
+			
 		// otherwise look in the enclosing scope, if there is one
 		if (enclosingScope != null)
 			return enclosingScope.resolve(name);
@@ -60,13 +84,19 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 			}
 		}
 
+		// otherwise look in the superclass, if there is one
+		if (superclasses != null)
+		{
+			for(ClassSymbol superclass : superclasses){
+				ClassSymbol x = (ClassSymbol) superclass.resolve(name);
+				if(x != null)
+					return x;
+			}
+		}
+		
 		// otherwise look in the enclosing scope, if there is one
 		if (enclosingScope != null)
 			return enclosingScope.resolveType(name);
-
-		// otherwise look in the superclass, if there is one
-		if (superclass != null)
-			return superclass.resolveType(name);
 
 		// otherwise it doesn't exist
 		return null;
@@ -74,28 +104,6 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 
 	@Override
 	public japa.parser.ast.type.Type castType() {
-//		if(this.name == "boolean"){
-//			this.name = "Boolean";
-//		}else if(this.name == "char"){
-//			this.name = "Char";
-//		}else if(this.name == "byte"){
-//			this.name = "Byte";
-//		}
-//		else if(this.name == "short"){
-//			this.name = "Short";
-//		}
-//		else if(this.name == "int"){
-//			this.name = "Integer";
-//		}
-//		else if(this.name == "long"){
-//			this.name = "Long";
-//		}
-//		else if(this.name == "float"){
-//			this.name = "Float";
-//		}
-//		else if(this.name == "double"){
-//			this.name = "Double";
-//		}
 		ClassOrInterfaceType t = new ClassOrInterfaceType(this.getDefinedLine(), this.getDefinedLine(), null, name, null);
 		return t;
 	}

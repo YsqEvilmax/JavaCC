@@ -98,39 +98,13 @@ import symboltable.GlobalScope;
 import symboltable.InterfaceSymbol;
 import symboltable.LocalScope;
 import symboltable.MethodSymbol;
-import symboltable.OpenScope;
 import symboltable.Scope;
 import symboltable.ScopedSymbol;
 import symboltable.Symbol;
 import symboltable.Type;
 import symboltable.VariableSymbol;
 
-public class ScopeVisitor extends TravelVisitor {
-
-	private Scope currentScope;
-
-	private void visitMembers(List<BodyDeclaration> members, Object arg) {
-		for (BodyDeclaration member : members) {
-			member.accept(this, arg);
-			member.setEnclosingScope(currentScope);
-		}
-	}
-
-	static public void checkScope(String name, Node n){
-		Scope scope = n.getEnclosingScope();
-		if(scope == null){
-			throw new A2SemanticsException("Node " + n.toString()
-			+ " havs no scope on line " + n.getBeginLine() + "!");
-		}
-		Symbol target = scope.resolve(name);
-		if (target == null) {
-			throw new A2SemanticsException("Name " + name
-					+ " cannot be successfully resloved in current scope: "
-					+ scope.getScopeName()
-					+ " on line " + n.getBeginLine() + "!");
-		}
-	}
-	
+public class ScopeCreateVisitor extends TravelVisitor {
 	@Override
 	public void visit(Node n, Object arg) {
 		throw new IllegalStateException(n.getClass().getName());
@@ -142,58 +116,38 @@ public class ScopeVisitor extends TravelVisitor {
 		currentScope = globalScope;
 		n.setEnclosingScope(currentScope);
 
-		if (n.getPakage() != null) {
-			n.getPakage().accept(this, arg);
-		}
-
-		if (n.getImports() != null) {
-			for (ImportDeclaration i : n.getImports()) {
-				i.accept(this, arg);
-			}
-		}
-
-		if (n.getTypes() != null) {
-			for (Iterator<TypeDeclaration> i = n.getTypes().iterator(); i
-					.hasNext();) {
-				i.next().accept(this, arg);
-			}
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(PackageDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getName().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ImportDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(TypeParameter n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getTypeBound() != null) {
-			for (Iterator<ClassOrInterfaceType> i = n.getTypeBound().iterator(); i
-					.hasNext();) {
-				ClassOrInterfaceType c = i.next();
-				c.accept(this, arg);
-			}
-		}
+		super.visit(n, arg);
 		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
 	public void visit(LineComment n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(BlockComment n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, arg);
 	}
 
 	@Override
@@ -205,19 +159,56 @@ public class ScopeVisitor extends TravelVisitor {
 		} else {
 			symbol =  new ClassSymbol(n.getName());
 		}
-		symbol.setDefinedLine(n.getBeginLine());	
+		symbol.setDefinedLine(n.getBeginLine());
 		symbol.setEnclosingScope(currentScope);
-
 		currentScope = symbol;
 		n.setEnclosingScope(currentScope);
+		
+//		List<Type> parameters = new ArrayList<Type>();
+//		if (n.getTypeParameters() != null) {
+//			for (Iterator<TypeParameter> i = n.getTypeParameters().iterator(); i
+//					.hasNext();) {
+//				TypeParameter p = i.next();		
+//				parameters.add(currentScope.resolveType(p.getName()));
+//				p.accept(this, arg);
+//			}
+//		}
+//		if (n.isInterface()) {
+//			((InterfaceSymbol)symbol).setParameterTypes(parameters);
+//			
+//		} else {
+//			((ClassSymbol)symbol).setParameterTypes(parameters);
+//		}
+//		
+//		List<ClassSymbol> superCs = new ArrayList<ClassSymbol>();
+//		if (n.getExtends() != null) {
+//			for (Iterator<ClassOrInterfaceType> i = n.getExtends().iterator(); i
+//					.hasNext();) {
+//				ClassOrInterfaceType p = i.next();		
+//				superCs.add((ClassSymbol) currentScope.resolveType(p.getName()));
+//				p.accept(this, arg);
+//			}
+//		}
+//		if (!n.isInterface()){
+//			((ClassSymbol)symbol).setSuperclasses(superCs);
+//		}
+//		
+//		List<InterfaceSymbol> supersIs = new ArrayList<InterfaceSymbol>();
+//		if (n.getImplements() != null) {
+//			for (Iterator<ClassOrInterfaceType> i = n.getImplements().iterator(); i
+//					.hasNext();) {
+//				ClassOrInterfaceType p = i.next();		
+//				supersIs.add((InterfaceSymbol) currentScope.resolveType(p.getName()));
+//				p.accept(this, arg);
+//			}
+//		}
+//		if (n.isInterface()){
+//			((InterfaceSymbol)symbol).setSuperinterfaces(supersIs);
+//		}else{
+//			((ClassSymbol)symbol).setInterfaces(supersIs);
+//		}
 
-		if (n.getMembers() != null) {
-			for (BodyDeclaration b : n.getMembers()) {
-				b.accept(this, arg);
-			}
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, symbol);
 	}
 
 	@Override
@@ -225,39 +216,16 @@ public class ScopeVisitor extends TravelVisitor {
 		EnumSymbol enumSymbol = new EnumSymbol(n.getName());
 		enumSymbol.setEnclosingScope(currentScope);
 
-		
 		currentScope = enumSymbol;
 		n.setEnclosingScope(currentScope);
 
-		if (n.getJavaDoc() != null) {
-			n.getJavaDoc().accept(this, arg);
-		}
-
-		if (n.getImplements() != null) {
-			for (Iterator<ClassOrInterfaceType> i = n.getImplements()
-					.iterator(); i.hasNext();) {
-				ClassOrInterfaceType c = i.next();
-				c.accept(this, arg);
-			}
-		}
-
-		if (n.getEntries() != null) {
-			for (Iterator<EnumConstantDeclaration> i = n.getEntries()
-					.iterator(); i.hasNext();) {
-				EnumConstantDeclaration e = i.next();
-				e.accept(this, arg);
-			}
-		}
-		if (n.getMembers() != null) {
-			visitMembers(n.getMembers(), arg);
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(EmptyTypeDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
@@ -268,75 +236,49 @@ public class ScopeVisitor extends TravelVisitor {
 		currentScope = localScope;
 		n.setEnclosingScope(currentScope);
 
-		if (n.getJavaDoc() != null) {
-			n.getJavaDoc().accept(this, arg);
-		}
-
-		if (n.getArgs() != null) {
-			for (Iterator<Expression> i = n.getArgs().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
-
-		if (n.getClassBody() != null) {
-			visitMembers(n.getClassBody(), arg);
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, arg);	
 	}
 
 	@Override
 	public void visit(AnnotationDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(AnnotationMemberDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(FieldDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getJavaDoc() != null) {
-			n.getJavaDoc().accept(this, arg);
-		}
-
-		n.getType().accept(this, arg);
-
-		for (Iterator<VariableDeclarator> i = n.getVariables().iterator(); i
-				.hasNext();) {
-			VariableDeclarator var = i.next();
-			var.accept(this, n.getType().castType());
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(VariableDeclarator n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getId().accept(this, arg);
-		if (n.getInit() != null) {
-			n.getInit().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(VariableDeclaratorId n, Object arg) {
 		n.setEnclosingScope(currentScope);	
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ConstructorDeclaration n, Object arg) {
 		MethodSymbol methodSymbol = new MethodSymbol(n.getName());
-		methodSymbol.setDefinedLine(n.getBeginLine());
+		methodSymbol.setDefinedLine(n.getBeginLine());		
 		methodSymbol.setEnclosingScope(currentScope);
-
 		currentScope = methodSymbol;
+		
 		n.setEnclosingScope(currentScope);
 	
 		List<Type> parameters = new ArrayList<Type>();
-
 		if (n.getParameters() != null) {
 			for (Iterator<Parameter> i = n.getParameters().iterator(); i
 					.hasNext();) {
@@ -345,7 +287,6 @@ public class ScopeVisitor extends TravelVisitor {
 				p.accept(this, arg);
 			}
 		}
-
 		methodSymbol.setParameters(parameters);
 
 		if (n.getThrows() != null) {
@@ -355,9 +296,8 @@ public class ScopeVisitor extends TravelVisitor {
 			}
 		}
 
-		n.getBlock().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();		
+		n.getBlock().accept(this, methodSymbol);	
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -365,9 +305,8 @@ public class ScopeVisitor extends TravelVisitor {
 		MethodSymbol methodSymbol = new MethodSymbol(n.getName());
 		methodSymbol.setDefinedLine(n.getBeginLine());
 		methodSymbol.setEnclosingScope(currentScope);
-
-
 		currentScope = methodSymbol;
+		
 		n.setEnclosingScope(currentScope);
 
 		List<Type> parameters = new ArrayList<Type>();
@@ -380,7 +319,6 @@ public class ScopeVisitor extends TravelVisitor {
 				p.accept(this, arg);
 			}
 		}
-
 		methodSymbol.setParameters(parameters);
 
 		if (n.getThrows() != null) {
@@ -391,23 +329,21 @@ public class ScopeVisitor extends TravelVisitor {
 		}
 
 		if (n.getBody() != null) {
-		n.getBody().accept(this, arg);
+		n.getBody().accept(this, methodSymbol);
 		}
-
 		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
 	public void visit(Parameter n, Object arg) {
 		n.setEnclosingScope(currentScope);
-
-		n.getType().accept(this, arg);
-		n.getId().accept(this, n.getType().castType());
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(EmptyMemberDeclaration n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
@@ -417,556 +353,408 @@ public class ScopeVisitor extends TravelVisitor {
 		
 		currentScope = localScope;
 		n.setEnclosingScope(currentScope);
-
-		if (n.getBlock() != null) {
-			n.getBlock().accept(this, arg);
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(JavadocComment n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ClassOrInterfaceType n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getScope() != null) {
-			n.getScope().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(PrimitiveType n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ReferenceType n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getType().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(VoidType n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(WildcardType n, Object arg) {
 		n.setEnclosingScope(currentScope);
-
-		if (n.getExtends() != null) {
-			n.getExtends().accept(this, arg);
-		}
-
-		if (n.getSuper() != null) {
-			n.getSuper().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ArrayAccessExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getName().accept(this, arg);
-		n.getIndex().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ArrayCreationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getType().accept(this, arg);
-
-		if (n.getDimensions() != null) {
-			for (Expression dim : n.getDimensions()) {
-				dim.accept(this, arg);
-			}
-			for (int i = 0; i < n.getArrayCount(); i++) {
-			}
-		} else {
-			for (int i = 0; i < n.getArrayCount(); i++) {
-			}
-			n.getInitializer().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ArrayInitializerExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getValues() != null) {
-			for (Iterator<Expression> i = n.getValues().iterator(); i.hasNext();) {
-				Expression expr = i.next();
-				expr.accept(this, arg);
-			}
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(AssignExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getTarget().accept(this, arg);
-
-		n.getValue().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(BinaryExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getLeft().accept(this, arg);
-
-		n.getRight().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(CastExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getType().accept(this, arg);
-		n.getExpr().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ClassExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getType().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ConditionalExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getCondition().accept(this, arg);
-		n.getThenExpr().accept(this, arg);
-		n.getElseExpr().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(EnclosedExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getInner().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(FieldAccessExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getScope().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(InstanceOfExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getExpr().accept(this, arg);
-		n.getType().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(StringLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(IntegerLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(LongLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(IntegerLiteralMinValueExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(LongLiteralMinValueExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(CharLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(DoubleLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(BooleanLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(NullLiteralExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(MethodCallExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getScope() != null) {
-			n.getScope().accept(this, arg);
-		}
-
-		if (n.getArgs() != null) {
-			for (Iterator<Expression> i = n.getArgs().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(NameExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);	
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ObjectCreationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getScope() != null) {
-			n.getScope().accept(this, arg);
-		}
-
-		n.getType().accept(this, arg);
-
-		if (n.getArgs() != null) {
-			for (Iterator<Expression> i = n.getArgs().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
-
-		if (n.getAnonymousClassBody() != null) {
-			visitMembers(n.getAnonymousClassBody(), arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(QualifiedNameExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(SuperMemberAccessExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ThisExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getClassExpr() != null) {
-			n.getClassExpr().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(SuperExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getClassExpr() != null) {
-			n.getClassExpr().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(UnaryExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getExpr().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(VariableDeclarationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
-
-		n.getType().accept(this, arg);
-
-		for (Iterator<VariableDeclarator> i = n.getVars().iterator(); i
-				.hasNext();) {
-			VariableDeclarator v = i.next();	
-			v.accept(this, n.getType().castType());
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(MarkerAnnotationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(SingleMemberAnnotationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(NormalAnnotationExpr n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(MemberValuePair n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getValue().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ExplicitConstructorInvocationStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (!(n.isThis())) {
-			if (n.getExpr() != null) {
-				n.getExpr().accept(this, arg);
-			}
-		}
-		if (n.getArgs() != null) {
-			for (Iterator<Expression> i = n.getArgs().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(TypeDeclarationStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getTypeDeclaration().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(AssertStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getCheck().accept(this, arg);
-		if (n.getMessage() != null) {
-			n.getMessage().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(BlockStmt n, Object arg) {
-		if(!(currentScope instanceof ScopedSymbol)){
-			LocalScope localScope = new LocalScope("block");
-			localScope.setEnclosingScope(currentScope);
-			currentScope = localScope;
+		if(arg == null){
+			LocalScope scope = new LocalScope("block");
+			scope.setEnclosingScope(currentScope);
+			currentScope = scope;	
 		}
+
 		n.setEnclosingScope(currentScope);
 
-		if (n.getStmts() != null) {
-			for (Statement s : n.getStmts()) {
-				s.accept(this, arg);
-			}
-		}
-
-		if(!(currentScope instanceof ScopedSymbol)){
-			currentScope = currentScope.getEnclosingScope();
-		}		
+		super.visit(n, arg);	
 	}
 
 	@Override
 	public void visit(LabeledStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getStmt().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(EmptyStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ExpressionStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getExpression().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(SwitchStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("switch");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("switch");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
-
-		n.getSelector().accept(this, arg);
-		if (n.getEntries() != null) {
-			for (SwitchEntryStmt s : n.getEntries()) {
-				s.accept(this, arg);
-			}
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(SwitchEntryStmt n, Object arg) {
-		n.setEnclosingScope(currentScope);
-		if (n.getLabel() != null) {
-			n.getLabel().accept(this, arg);
-		}
 
-		if (n.getStmts() != null) {
-			for (Statement s : n.getStmts()) {
-				s.accept(this, arg);
-			}
-		}
+		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(BreakStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(ReturnStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		if (n.getExpr() != null) {
-			n.getExpr().accept(this, arg);
-		}
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(IfStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("if");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("if");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
-
-		n.getCondition().accept(this, arg);
-		n.getThenStmt().accept(this, arg);
-		if (n.getElseStmt() != null) {
-			n.getElseStmt().accept(this, arg);
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(WhileStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("while");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("while");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
 
-		n.getCondition().accept(this, arg);
-		n.getBody().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(ContinueStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(DoStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("do");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("do");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
 
-		n.getBody().accept(this, arg);
-		n.getCondition().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(ForeachStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("foreach");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("foreach");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
 
-		n.getVariable().accept(this, arg);
-		n.getIterable().accept(this, arg);
-		n.getBody().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);	
 	}
 
 	@Override
 	public void visit(ForStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("for");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("for");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
 
-		if (n.getInit() != null) {
-			for (Iterator<Expression> i = n.getInit().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
-		if (n.getCompare() != null) {
-			n.getCompare().accept(this, arg);
-		}
-		if (n.getUpdate() != null) {
-			for (Iterator<Expression> i = n.getUpdate().iterator(); i.hasNext();) {
-				Expression e = i.next();
-				e.accept(this, arg);
-			}
-		}
-		n.getBody().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(ThrowStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getExpr().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(SynchronizedStmt n, Object arg) {
 		n.setEnclosingScope(currentScope);
-		n.getExpr().accept(this, arg);
-		n.getBlock().accept(this, arg);
+		super.visit(n, arg);
 	}
 
 	@Override
 	public void visit(TryStmt n, Object arg) {
-		LocalScope localScope = new LocalScope("try");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("try");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
-
-		n.getTryBlock().accept(this, arg);
-		if (n.getCatchs() != null) {
-			for (CatchClause c : n.getCatchs()) {
-				c.accept(this, arg);
-			}
-		}
-		if (n.getFinallyBlock() != null) {
-			n.getFinallyBlock().accept(this, arg);
-		}
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);	
 	}
 
 	@Override
 	public void visit(CatchClause n, Object arg) {
-		LocalScope localScope = new LocalScope("catch");
-		localScope.setEnclosingScope(currentScope);
-
-		currentScope = localScope;
+		LocalScope	scope = new LocalScope("catch");
+		scope.setEnclosingScope(currentScope);
+		currentScope = scope;
 		n.setEnclosingScope(currentScope);
-
-		n.getExcept().accept(this, arg);
-		n.getCatchBlock().accept(this, arg);
-
-		currentScope = currentScope.getEnclosingScope();
+		super.visit(n, scope);
 	}
 
 	@Override
 	public void visit(MapInitializationExpr n, Object arg) {
+		n.setEnclosingScope(currentScope);
 		super.visit(n, arg);
 	}
 }

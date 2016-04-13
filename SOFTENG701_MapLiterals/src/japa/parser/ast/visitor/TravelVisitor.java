@@ -85,9 +85,10 @@ import japa.parser.ast.type.VoidType;
 import japa.parser.ast.type.WildcardType;
 import se701.A2SemanticsException;
 import symboltable.Scope;
+import symboltable.ScopedSymbol;
 import symboltable.Symbol;
 
-public class TravelVisitor implements VoidVisitor<Object> {
+public abstract class TravelVisitor implements VoidVisitor<Object> {
 	protected Scope currentScope;
 	
 	protected void travel(Node n, Object arg){
@@ -100,39 +101,6 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		if(many != null){
 			for(T t : many){
 				travel(t, arg);
-			}
-		}
-	}
-	
-	protected void checkExistance(Symbol resloved, String name, Node n){
-		if (resloved == null) {
-			throw new A2SemanticsException("Error occurs on line "
-					+ n.getBeginLine() + " : "
-					+ "name " + name
-					+ " on line " + n.getBeginLine()
-					+ " cannot be successfully resloved in current scope: "
-					+ this.currentScope.getScopeName() + "!");
-		}
-	}
-	
-	protected void checkExistance(String name, Node n){
-		if(this.currentScope != null){
-			Symbol resolved = this.currentScope.resolve(name);
-			checkExistance(resolved, name, n);
-		}
-	}
-	
-	protected void checkBeforeDeclaraion(String name, Node n){
-		if(this.currentScope != null){
-			Symbol target = this.currentScope.resolve(name);
-			if (target != null) {
-				if(this.currentScope.isLocal(target) && target.getDefinedLine() > n.getBeginLine())
-				throw new A2SemanticsException("Error occurs on line " 
-						+ n.getBeginLine() + " :"
-						+ " name " + name
-						+ " on line " + n.getBeginLine()
-						+ " is used before its declaration on line "
-						+ target.getDefinedLine() + "!");
 			}
 		}
 	}
@@ -181,9 +149,6 @@ public class TravelVisitor implements VoidVisitor<Object> {
 	@Override
 	public void visit(ClassOrInterfaceDeclaration n, Object arg) {
 		currentScope = n.getEnclosingScope();
-		this.travelMany(n.getTypeParameters(), arg);
-		this.travelMany(n.getExtends(), arg);
-		this.travelMany(n.getImplements(), arg);
 		this.travelMany(n.getMembers(), n.getName());
 		currentScope = currentScope.getEnclosingScope();
 	}
@@ -195,6 +160,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		this.travelMany(n.getImplements(), arg); 
 		this.travelMany(n.getEntries(), arg); 
 		this.travelMany(n.getMembers(), arg); 
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -209,6 +175,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		this.travel(n.getJavaDoc(), arg);
 		this.travelMany(n.getArgs(), arg); 
 		this.travelMany(n.getClassBody(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -275,6 +242,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 	public void visit(InitializerDeclaration n, Object arg) {
 		currentScope = n.getEnclosingScope();
 		this.travel(n.getBlock(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -533,9 +501,6 @@ public class TravelVisitor implements VoidVisitor<Object> {
 
 	@Override
 	public void visit(BlockStmt n, Object arg) {
-//		currentScope = n.getEnclosingScope();
-//		this.travelMany(n.getStmts(), arg);
-//		currentScope = currentScope.getEnclosingScope();
 		currentScope = n.getEnclosingScope();
 		if(n.getStmts() != null){
 			for(Statement t : n.getStmts()){
@@ -545,7 +510,9 @@ public class TravelVisitor implements VoidVisitor<Object> {
 				travel(t, arg);
 			}
 		}
-		currentScope = currentScope.getEnclosingScope();
+		if(currentScope.getScopeName().equals("scope")){
+			currentScope = currentScope.getEnclosingScope();
+		}		
 	}
 
 	@Override
@@ -570,6 +537,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		currentScope = n.getEnclosingScope();
 		this.travel(n.getSelector(), arg);
 		this.travelMany(n.getEntries(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -604,6 +572,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		currentScope = n.getEnclosingScope();
 		this.travel(n.getCondition(), null);
 		this.travel(n.getBody(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -616,6 +585,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		currentScope = n.getEnclosingScope();	
 		this.travel(n.getBody(), arg);
 		this.travel(n.getCondition(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -624,6 +594,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		this.travel(n.getVariable(), arg);
 		this.travel(n.getIterable(), arg);
 		this.travel(n.getBody(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -633,6 +604,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		this.travel(n.getCompare(), arg);
 		this.travelMany(n.getUpdate(), arg);
 		this.travel(n.getBody(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -654,6 +626,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		this.travel(n.getTryBlock(), arg);
 		this.travelMany(n.getCatchs(), arg);
 		this.travel(n.getFinallyBlock(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override
@@ -661,6 +634,7 @@ public class TravelVisitor implements VoidVisitor<Object> {
 		currentScope = n.getEnclosingScope();	;
 		this.travel(n.getExcept(), arg);
 		this.travel(n.getCatchBlock(), arg);
+		currentScope = currentScope.getEnclosingScope();
 	}
 
 	@Override

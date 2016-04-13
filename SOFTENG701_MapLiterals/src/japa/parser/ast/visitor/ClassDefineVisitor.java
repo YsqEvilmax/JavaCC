@@ -1,13 +1,22 @@
 package japa.parser.ast.visitor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import japa.parser.ast.TypeParameter;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.SuperExpr;
 import japa.parser.ast.expr.ThisExpr;
+import japa.parser.ast.type.ClassOrInterfaceType;
+import symboltable.ClassSymbol;
+import symboltable.InterfaceSymbol;
 import symboltable.ScopedSymbol;
+import symboltable.Type;
 
-public class ClassCollectVisitor extends TravelVisitor {
+public class ClassDefineVisitor extends TravelVisitor {
 
-	public ClassCollectVisitor() {
+	public ClassDefineVisitor() {
 		super();
 	}
 	
@@ -15,7 +24,7 @@ public class ClassCollectVisitor extends TravelVisitor {
 	public void visit(ClassOrInterfaceDeclaration n, Object arg) {	
 		currentScope = n.getEnclosingScope();
 		currentScope.getEnclosingScope().define((ScopedSymbol)currentScope);
-		currentScope = currentScope.getEnclosingScope();
+			
 		super.visit(n, arg);
 	}
 }

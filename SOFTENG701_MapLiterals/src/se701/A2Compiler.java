@@ -11,14 +11,14 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.visitor.SillyBreakVisitor;
 import japa.parser.ast.visitor.TypeCheckVisitor;
 import japa.parser.ast.visitor.VariableCheckVisitor;
-import japa.parser.ast.visitor.VariableCollectVisitor;
+import japa.parser.ast.visitor.VariableDefineVisitor;
 import japa.parser.ast.visitor.ClassCheckVisitor;
-import japa.parser.ast.visitor.ClassCollectVisitor;
+import japa.parser.ast.visitor.ClassDefineVisitor;
 import japa.parser.ast.visitor.DumpVisitor;
 import japa.parser.ast.visitor.MapCheckVisitor;
 import japa.parser.ast.visitor.MethodCheckVisitor;
-import japa.parser.ast.visitor.MethodCollectVisitor;
-import japa.parser.ast.visitor.ScopeVisitor;
+import japa.parser.ast.visitor.MethodDefineVisitor;
+import japa.parser.ast.visitor.ScopeCreateVisitor;
 
 public class A2Compiler {
 	
@@ -37,34 +37,16 @@ public class A2Compiler {
 		
 		// perform visit 2... etc etc 
 		// check scopes
-		ScopeVisitor scopes = new ScopeVisitor();
+		ScopeCreateVisitor scopes = new ScopeCreateVisitor();
 		ast.accept(scopes, null);
-
-//		// Check that all classes have been accessed only after their
-//		// creation, and that any assignments are of the correct type.
-//		ClassVisitor classes = new ClassVisitor();
-//		ast.accept(classes, null);
-//
-//		// Check that all method calls are to methods that exist, and pass in
-//		// the correct type for each parameter.
-//		MethodVisitor methods = new MethodVisitor();
-//		ast.accept(methods, null);
-//		
-//		// check variables
-//		VariableVisitor variables = new VariableVisitor();
-//		ast.accept(variables, null);
-//		
-//		// check types
-//		TypeVisitor types = new TypeVisitor();
-//		ast.accept(types, null);
 		
-		ClassCollectVisitor ccv = new ClassCollectVisitor();
+		ClassDefineVisitor ccv = new ClassDefineVisitor();
 		ast.accept(ccv, null);
 		
-		MethodCollectVisitor mcv = new MethodCollectVisitor();
+		MethodDefineVisitor mcv = new MethodDefineVisitor();
 		ast.accept(mcv, null);
 		
-		VariableCollectVisitor vcv = new VariableCollectVisitor();
+		VariableDefineVisitor vcv = new VariableDefineVisitor();
 		ast.accept(vcv, null);
 			
 		VariableCheckVisitor vckv = new VariableCheckVisitor();
