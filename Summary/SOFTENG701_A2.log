@@ -1,0 +1,385 @@
+This is LuaTeX, Version beta-0.76.0-2013062821 (rev 4627)  (format=lualatex 2016.4.10)  15 APR 2016 17:35
+**SOFTENG701_A2.tex
+(./SOFTENG701_A2.tex
+LaTeX2e <2014/05/01>
+Babel <3.9l> and hyphenation patterns for 68 languages loaded.
+("C:/Program Files/MiKTeX 2.9/tex/latex/ieeetran/IEEEtran.cls"
+Document Class: IEEEtran 2014/09/17 V1.8a by Michael Shell
+-- See the "IEEEtran_HOWTO" manual for usage information.
+-- http://www.michaelshell.org/tex/ieeetran/
+\@IEEEtrantmpdimenA=\dimen102
+\@IEEEtrantmpdimenB=\dimen103
+\@IEEEtrantmpdimenC=\dimen104
+\@IEEEtrantmpcountA=\count79
+\@IEEEtrantmpcountB=\count80
+\@IEEEtrantmpcountC=\count81
+\@IEEEtrantmptoksA=\toks14
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 458.
+("C:/Program Files/MiKTeX 2.9/tex/latex/psnfss/ot1ptm.fd"
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+-- Using 8.5in x 11in (letter) paper.
+-- Using PDF output.
+\@IEEEnormalsizeunitybaselineskip=\dimen105
+-- This is a 10 point document.
+\CLASSINFOnormalsizebaselineskip=\dimen106
+\CLASSINFOnormalsizeunitybaselineskip=\dimen107
+\IEEEnormaljot=\dimen108
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1039.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1039.
+\IEEEquantizedlength=\dimen109
+\IEEEquantizedlengthdiff=\dimen110
+\IEEEquantizedtextheightdiff=\dimen111
+\IEEEilabelindentA=\dimen112
+\IEEEilabelindentB=\dimen113
+\IEEEilabelindent=\dimen114
+\IEEEelabelindent=\dimen115
+\IEEEdlabelindent=\dimen116
+\IEEElabelindent=\dimen117
+\IEEEiednormlabelsep=\dimen118
+\IEEEiedmathlabelsep=\dimen119
+\IEEEiedtopsep=\skip41
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@IEEEsubequation=\count86
+\abovecaptionskip=\skip42
+\belowcaptionskip=\skip43
+\c@figure=\count87
+\c@table=\count88
+\@IEEEeqnnumcols=\count89
+\@IEEEeqncolcnt=\count90
+\@IEEEsubeqnnumrollback=\count91
+\@IEEEquantizeheightA=\dimen120
+\@IEEEquantizeheightB=\dimen121
+\@IEEEquantizeheightC=\dimen122
+\@IEEEquantizeprevdepth=\dimen123
+\@IEEEquantizemultiple=\count92
+\@IEEEquantizeboxA=\box26
+\@IEEEtmpitemindent=\dimen124
+\c@IEEEbiography=\count93
+\@IEEEtranrubishbin=\box27
+) ("C:/Program Files/MiKTeX 2.9/tex/latex/float/float.sty"
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count94
+\float@exts=\toks15
+\float@box=\box28
+\@float@everytoks=\toks16
+\@floatcapt=\box29
+)
+("C:/Program Files/MiKTeX 2.9/tex/latex/geometry/geometry.sty"
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/graphics/keyval.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/ifpdf.sty"
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/ifvtex.sty"
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+("C:/Program Files/MiKTeX 2.9/tex/generic/ifxetex/ifxetex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count95
+\Gm@cntv=\count96
+\c@Gm@tempcnt=\count97
+\Gm@bindingoffset=\dimen125
+\Gm@wd@mp=\dimen126
+\Gm@odd@mp=\dimen127
+\Gm@even@mp=\dimen128
+\Gm@layoutwidth=\dimen129
+\Gm@layoutheight=\dimen130
+\Gm@layouthoffset=\dimen131
+\Gm@layoutvoffset=\dimen132
+\Gm@dimlist=\toks18
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/geometry/geometry.cfg"))
+("C:/Program Files/MiKTeX 2.9/tex/latex/koma-script/scrextend.sty"
+Package: scrextend 2015/02/07 v3.16 KOMA-Script package (extend other classes wi
+th features of KOMA-Script classes)
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/koma-script/scrkbase.sty"
+Package: scrkbase 2015/02/07 v3.16 KOMA-Script package (KOMA-Script-dependent ba
+sics and keyval usage)
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/koma-script/scrbase.sty"
+Package: scrbase 2015/02/07 v3.16 KOMA-Script package (KOMA-Script-independent b
+asics and keyval usage)
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/koma-script/scrlfile.sty"
+Package: scrlfile 2015/02/07 v3.16 KOMA-Script package (loading files)
+
+Package scrlfile, 2015/02/07 v3.16 KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+)))) ("C:/Program Files/MiKTeX 2.9/tex/latex/graphics/graphicx.sty"
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/graphics/graphics.sty"
+Package: graphics 2014/10/28 v1.0p Standard LaTeX Graphics (DPC,SPQR)
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/graphics/trig.sty"
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+("C:/Program Files/MiKTeX 2.9/tex/latex/00miktex/graphics.cfg"
+File: graphics.cfg 2007/01/18 v1.5 graphics configuration of teTeX/TeXLive
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/pdftex-def/pdftex.def"
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/infwarerr.sty"
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/ltxcmds.sty"
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/pdftexcmds.sty"
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO)
+
+
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/ifluatex.sty"
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX detected.
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+
+("C:/Program Files/MiKTeX 2.9/tex/generic/oberdiek/luatex-loader.sty"
+Package: luatex-loader 2010/03/09 v0.4 Lua module loader (HO)
+
+(C:/Program Files/MiKTeX 2.9/scripts/oberdiek/oberdiek.luatex.lua))
+\pdftexcmds@toks=\toks19
+)
+\Gread@gobject=\count98
+))
+\Gin@req@height=\dimen133
+\Gin@req@width=\dimen134
+)
+(./SOFTENG701_A2.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 371.
+LaTeX Font Info:    ... okay on input line 371.
+
+-- Lines per column: 54 (approximate, difference = 2.43001pt).
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(54.2025pt, 505.89pt, 54.2025pt)
+* v-part:(T,H,B)=(72.26999pt, 650.43001pt, 72.26999pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=505.89pt
+* \textheight=650.43001pt
+* \oddsidemargin=-18.06749pt
+* \evensidemargin=-18.06749pt
+* \topmargin=-33.342pt
+* \headheight=12.0pt
+* \headsep=21.342pt
+* \topskip=12.0pt
+* \footskip=25.80774pt
+* \marginparwidth=20.0pt
+* \marginparsep=10.0pt
+* \columnsep=12.0pt
+* \skip\footins=10.79993pt plus 4.79993pt minus 2.39996pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumntrue
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+("C:/Program Files/MiKTeX 2.9/tex/context/base/supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count99
+\scratchdimen=\dimen135
+\scratchbox=\box30
+\nofMPsegments=\count100
+\nofMParguments=\count101
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count102
+\MPscratchDim=\dimen136
+\MPnumerator=\count103
+\makeMPintoPDFobject=\count104
+\everyMPtoPDFconversion=\toks21
+) <image/symtab_arc.jpg, id=1, 863.47594pt x 299.99579pt>
+File: image/symtab_arc.jpg Graphic file (type jpg)
+
+<use image/symtab_arc.jpg>
+Package pdftex.def Info: image/symtab_arc.jpg used on input line 603.
+(pdftex.def)             Requested size: 246.94499pt x 85.79265pt.
+
+<image/visitors_call.jpg, id=2, 691.45828pt x 292.09125pt>
+File: image/visitors_call.jpg Graphic file (type jpg)
+
+<use image/visitors_call.jpg>
+Package pdftex.def Info: image/visitors_call.jpg used on input line 609.
+(pdftex.def)             Requested size: 246.94499pt x 104.31485pt.
+ [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
+
+
+ <./image/symtab_arc.jpg> <./image/visitors_call.jpg>]
+<image/visitors_arc.jpg, id=11, 617.30624pt x 508.90125pt>
+File: image/visitors_arc.jpg Graphic file (type jpg)
+
+<use image/visitors_arc.jpg>
+Package pdftex.def Info: image/visitors_arc.jpg used on input line 613.
+(pdftex.def)             Requested size: 246.94499pt x 203.58018pt.
+LaTeX Font Info:    Try loading font information for OT1+phv on input line 617.
+
+("C:/Program Files/MiKTeX 2.9/tex/latex/psnfss/ot1phv.fd"
+File: ot1phv.fd 2001/06/04 scalable font definitions for OT1/phv.
+)
+LaTeX Font Info:    Font shape `OT1/phv/bx/n' in size <10> not available
+(Font)              Font shape `OT1/phv/b/n' tried instead on input line 618.
+
+Underfull \hbox (badness 1917) in paragraph at lines 621--622
+[][]\OT1/ptm/m/n/10 Based on the travers-ing abil-ity
+ []
+
+<image/map_item.jpg, id=12, 537.13171pt x 130.61298pt>
+File: image/map_item.jpg Graphic file (type jpg)
+
+<use image/map_item.jpg>
+Package pdftex.def Info: image/map_item.jpg used on input line 636.
+(pdftex.def)             Requested size: 246.94499pt x 60.0488pt.
+
+<image/map_create.jpg, id=13, 522.07547pt x 126.0961pt>
+File: image/map_create.jpg Graphic file (type jpg)
+
+<use image/map_create.jpg>
+Package pdftex.def Info: image/map_create.jpg used on input line 640.
+(pdftex.def)             Requested size: 246.94499pt x 59.64421pt.
+
+<image/map_expr.jpg, id=14, 188.95593pt x 214.92796pt>
+File: image/map_expr.jpg Graphic file (type jpg)
+
+<use image/map_expr.jpg>
+Package pdftex.def Info: image/map_expr.jpg used on input line 646.
+(pdftex.def)             Requested size: 246.94499pt x 280.88866pt.
+ [2 <./image/visitors_arc.jpg> <./image/map_item.jpg> <./image/map_create.jpg>]
+
+Underfull \hbox (badness 10000) in paragraph at lines 665--666
+[][]\OT1/ptm/m/n/10 Map
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 666--667
+[][]\OT1/ptm/m/n/10 Many vari-ables of
+ []
+
+[3 <./image/map_expr.jpg>]
+Underfull \hbox (badness 1824) in paragraph at lines 740--741
+[][]\OT1/ptm/m/n/8 N. Bansal, \OT1/ptm/m/it/8 Ini-tial-iz-ing Java Maps In-line
+\OT1/ptm/m/n/8 , 2009, [on-line]. Avail-
+ []
+
+
+Underfull \hbox (badness 3019) in paragraph at lines 740--741
+\OT1/ptm/m/n/8 able: http://nilesh-bansal.blogspot.co.nz/2009/04/initializing-j
+ava-maps-
+ []
+
+
+Underfull \hbox (badness 2894) in paragraph at lines 743--744
+[][]\OT1/ptm/m/n/8 Stack-Over-Flow, \OT1/ptm/m/it/8 Ef-fi-ciency of Java “Dou
+-ble Brace Ini-tial-iza-tion”?\OT1/ptm/m/n/8 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 743--744
+\OT1/ptm/m/n/8 2009, [on-line]. Avail-able: https://stack-over-flow.com/ques-
+ []
+
+
+Underfull \hbox (badness 7203) in paragraph at lines 743--744
+\OT1/ptm/m/n/8 tions/924285/efficiency-of-java-double-brace-initialization. [Ac
+-cessed:
+ []
+
+[4
+
+] (./SOFTENG701_A2.aux) )
+
+Here is how much of LuaTeX's memory you used:
+ 3526 strings out of 494733
+ 100000,154059 words of node,token memory allocated
+ 287 words of node memory still in use:
+    nodes
+   avail lists: 2:21,3:152,4:1166,5:207,6:4279,7:175,9:150,10:350
+ 6927 multiletter control sequences out of 65536+200000
+ 124 fonts using 4879423 bytes
+ 43i,5n,30p,933b,265s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Program Files/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files/M
+iKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts
+/type1/urw/times/utmb8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/u
+tmbi8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Pro
+gram Files/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on SOFTENG701_A2.pdf (4 pages, 794953 bytes).
+
+PDF statistics: 42 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 131072)
+ 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+
