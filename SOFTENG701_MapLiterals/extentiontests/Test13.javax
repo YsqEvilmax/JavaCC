@@ -11,9 +11,9 @@ public class StudentSample {
 		sampleMethod(); 
 	} 
 
- 	public static Map<String, String> sampleMethod() {
+ 	public static void sampleMethod() {
 		
-		return new HashMap {
+		Map states3 = new StudentSample {
 		    "AL" : "Alabama",
 		    "AK" : "Alaska",
 		    "AZ" : "Arizona", 

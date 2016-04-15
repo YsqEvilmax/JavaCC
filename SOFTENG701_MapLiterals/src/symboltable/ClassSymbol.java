@@ -42,8 +42,10 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 	@Override
 	public boolean isLocal(String s){
 		boolean x = super.isLocal(s);
-		for(ClassSymbol cs : superclasses){
-			x = (x || cs.isLocal(s));
+		if(superclasses != null){
+			for(ClassSymbol cs : superclasses){
+				x = (x || cs.isLocal(s));
+			}
 		}
 		return x;
 	}
@@ -59,7 +61,7 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 		if (superclasses != null)
 		{
 			for(ClassSymbol superclass : superclasses){
-				ClassSymbol x = (ClassSymbol) superclass.resolve(name);
+				Symbol x = (Symbol) superclass.resolve(name);
 				if(x != null)
 					return x;
 			}
@@ -88,7 +90,7 @@ public class ClassSymbol extends ScopedSymbol implements Type {
 		if (superclasses != null)
 		{
 			for(ClassSymbol superclass : superclasses){
-				ClassSymbol x = (ClassSymbol) superclass.resolve(name);
+				Type x = (Type) superclass.resolve(name);
 				if(x != null)
 					return x;
 			}

@@ -33,20 +33,20 @@ public class A2MainRunner {
 		 * This is to compile StudentSample.javax. The marker will run with the supplied *.javax 
 		 * file which is associated to your selected feature. 		 
 		 */
-//		for (int i = 1; i <= 12; i++) { 
-//			String file = "extentiontests"+System.getProperty("file.separator")+"Test" + i + ".javax";
-//			try {
-//				A2Compiler.compile(new File(file));
-//				System.out.println(file+" ... OK");
-//			} catch (ParseException e) {
-//				System.err.println(file+" Parser exception... "+e.getMessage());
-//				e.printStackTrace();
-//			} catch (A2SemanticsException e) {
-//				System.err.println(file+" Semantics exception... "+e.getMessage());
-//				e.printStackTrace();
-//			}  catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		for (int i = 1; i <= 12; i++) { 
+			String file = "extentiontests"+System.getProperty("file.separator")+"Test" + i + ".javax";
+			try {
+				A2Compiler.compile(new File(file));
+				System.out.println(file+" ... OK");
+			} catch (ParseException e) {
+				System.err.println(file+" Parser exception... "+e.getMessage());
+				e.printStackTrace();
+			} catch (A2SemanticsException e) {
+				System.err.println(file+" Semantics exception... "+e.getMessage());
+				e.printStackTrace();
+			}  catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

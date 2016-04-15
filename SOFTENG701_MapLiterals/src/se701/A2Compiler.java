@@ -48,16 +48,16 @@ public class A2Compiler {
 		
 		VariableDefineVisitor vcv = new VariableDefineVisitor();
 		ast.accept(vcv, null);
-			
-		VariableCheckVisitor vckv = new VariableCheckVisitor();
-		ast.accept(vckv, null);
-		
-		MethodCheckVisitor mckv = new MethodCheckVisitor();
-		ast.accept(mckv, null);
 		
 		ClassCheckVisitor cckv = new ClassCheckVisitor();
 		ast.accept(cckv, null);
 		
+		MethodCheckVisitor mckv = new MethodCheckVisitor();
+		ast.accept(mckv, null);
+			
+		VariableCheckVisitor vckv = new VariableCheckVisitor();
+		ast.accept(vckv, null);
+			
 		MapCheckVisitor mapckv = new MapCheckVisitor();
 		ast.accept(mapckv, null);
 

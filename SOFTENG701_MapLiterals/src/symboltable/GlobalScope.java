@@ -18,6 +18,8 @@ public class GlobalScope extends BaseScope {
 		define(new BuiltInTypeSymbol("null"));
 		define(new BuiltInTypeSymbol("Map"));
 		define(new BuiltInTypeSymbol("HashMap"));
+		
+		define(new BuiltInTypeSymbol("System.out.println"));
 
 		define(new VariableSymbol("true", resolveType("boolean")));
 		define(new VariableSymbol("false", resolveType("boolean")));
